@@ -1,6 +1,16 @@
-$primary: #6F27F5;
+$primary: #6f27f5;
+$font-family-sans-serif: 'SF Pro';
 
-@import "bootstrap";
+@import 'bootstrap';
+
+@font-face {
+	font-family: SF Pro;
+	// font-style: normal;
+	// font-weight: 400;
+	// font-size: 16px;
+	// line-height: 24px;
+	src: local('SF Pro'), url('fonts/SFProDisplay-Regular.ttf') format('truetype');
+}
 
 html {
 	background-color: white;

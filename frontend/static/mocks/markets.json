@@ -4,41 +4,84 @@
     "description": "Who will win the 2022 rugby world cup: France or South Africa?",
     "closingDate": "2022-08-28 14:30",
     "settlementDate": "2022-08-28 14:30",
-    "contractAddress": "12345"
+    "contractAddress": "12345",
+    "outcomeTokens": [
+      {
+        "name": "France",
+        "price": "0.6"
+      },
+      {
+        "name": "South Africa",
+        "price": "0.4"
+      }
+    ]
   },
   {
     "title": "2022 rugby world cup",
     "description": "Who will win the 2022 rugby world cup: France or South Africa?",
     "closingDate": "2022-08-28 14:30",
     "settlementDate": "2022-08-28 14:30",
-    "contractAddress": "12345"
+    "contractAddress": "12345",
+    "outcomeTokens": [
+      {
+        "name": "France",
+        "price": "0.6"
+      },
+      {
+        "name": "South Africa",
+        "price": "0.4"
+      }
+    ]
   },
   {
     "title": "2022 rugby world cup",
     "description": "Who will win the 2022 rugby world cup: France or South Africa?",
     "closingDate": "2022-08-28 14:30",
     "settlementDate": "2022-08-28 14:30",
-    "contractAddress": "12345"
+    "contractAddress": "12345",
+    "outcomeTokens": [
+      {
+        "name": "France",
+        "price": "0.6"
+      },
+      {
+        "name": "South Africa",
+        "price": "0.4"
+      }
+    ]
   },
   {
     "title": "2022 rugby world cup",
     "description": "Who will win the 2022 rugby world cup: France or South Africa?",
     "closingDate": "2022-08-28 14:30",
     "settlementDate": "2022-08-28 14:30",
-    "contractAddress": "12345"
+    "contractAddress": "12345",
+    "outcomeTokens": [
+      {
+        "name": "France",
+        "price": "0.6"
+      },
+      {
+        "name": "South Africa",
+        "price": "0.4"
+      }
+    ]
   },
   {
     "title": "2022 rugby world cup",
     "description": "Who will win the 2022 rugby world cup: France or South Africa?",
     "closingDate": "2022-08-28 14:30",
     "settlementDate": "2022-08-28 14:30",
-    "contractAddress": "12345"
-  },
-  {
-    "title": "2022 rugby world cup",
-    "description": "Who will win the 2022 rugby world cup: France or South Africa?",
-    "closingDate": "2022-08-28 14:30",
-    "settlementDate": "2022-08-28 14:30",
-    "contractAddress": "12345"
+    "contractAddress": "12345",
+    "outcomeTokens": [
+      {
+        "name": "France",
+        "price": "0.6"
+      },
+      {
+        "name": "South Africa",
+        "price": "0.4"
+      }
+    ]
   }
 ]

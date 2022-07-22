@@ -7,10 +7,15 @@ export interface Market {
   contractAddress: string;
   creator?: ContractInfo;
   arbiter?: ContractInfo;
-  outcomeTokens?: string[];
+  outcomeTokens: OutcomeToken[];
 }
 
 export interface ContractInfo {
   address: string;
   // if we have time - lookup name in dictionary
+}
+
+export interface OutcomeToken {
+  name: string;
+  price: number;
 }
