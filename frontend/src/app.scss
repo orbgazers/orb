@@ -1,0 +1,23 @@
+$primary: #6F27F5;
+
+@import "bootstrap";
+
+html {
+	background-color: white;
+}
+
+body {
+	background: none;
+}
+
+.card {
+	border-radius: 20px;
+	border: none;
+	background-color: white;
+	box-shadow: 0px 4px 22px 10px rgba(111, 39, 245, 0.1);
+}
+
+.btn {
+	border-radius: 30px;
+	height: 36px;
+}
