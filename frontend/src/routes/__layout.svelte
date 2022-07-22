@@ -5,6 +5,6 @@
 
 <Header />
 
-<main class="container-xxl">
+<main class="container-xxl pb-5">
 	<slot />
 </main>

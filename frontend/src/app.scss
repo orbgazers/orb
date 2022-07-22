@@ -1,4 +1,4 @@
-$primary: #6f27f5;
+@import "scss/variables.scss";
 $font-family-sans-serif: 'SF Pro';
 
 @import 'bootstrap';
@@ -9,7 +9,7 @@ $font-family-sans-serif: 'SF Pro';
 	// font-weight: 400;
 	// font-size: 16px;
 	// line-height: 24px;
-	src: local('SF Pro'), url('fonts/SFProDisplay-Regular.ttf') format('truetype');
+	src: local(''), url('/fonts/SFProDisplay-Regular.ttf') format('truetype');
 }
 
 html {
@@ -20,14 +20,34 @@ body {
 	background: none;
 }
 
-.card {
+a {
+	color: inherit;
+	text-decoration: none;
+	&:hover {
+		color: inherit;
+	}
+}
+
+.card-fancy {
 	border-radius: 20px;
-	border: none;
+	padding: 1em;
 	background-color: white;
 	box-shadow: 0px 4px 22px 10px rgba(111, 39, 245, 0.1);
 }
 
+ .gray-field {
+    background-color: #F5F5F5;
+    border-radius: 10px;
+    padding: 1em;
+    margin: 1em 0;
+  }
+
 .btn {
-	border-radius: 30px;
-	height: 36px;
+	border-radius: 50px;
+	padding: 0.25rem 2em;
+	height: fit-content;
+}
+
+.smooth-transition {
+	transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
