@@ -49,9 +49,10 @@ contract Markets {
     OrbCoin public orbCoin;
     IERC20 public backingCoin;
     Market[] public markets;
-    mapping(uint256 => OutcomeToken[]) public outcomees;
-    mapping(uint256 => ZuniswapV2Pair[]) public pairss;
+    mapping(uint256 => OutcomeToken[]) public outcomes;
+    mapping(uint256 => ZuniswapV2Pair[]) public pairs;
     mapping(uint256 => LPToken) public lpTokens;
+    mapping(uint256 => uint256) public backing;
 
     constructor(address _orbCoin, address _backingCoin) {
         orbCoin = OrbCoin(_orbCoin);
@@ -100,8 +101,8 @@ contract Markets {
         lpTokens[id] = new LPToken(id);
         {
             uint256 sum = 0;
-            OutcomeToken[] storage _outcomes = outcomees[id];
-            ZuniswapV2Pair[] storage _pairs = pairss[id];
+            OutcomeToken[] storage _outcomes = outcomes[id];
+            ZuniswapV2Pair[] storage _pairs = pairs[id];
             for (uint256 i = 0; i < info.outcomeNames.length; ++i) {
                 _outcomes.push(
                     new OutcomeToken(
@@ -143,9 +144,9 @@ contract Markets {
             multiplier = multipliers[(max * 10) / BASE18];
         }
 
-        // TODO check that the rounding is correctm
-        OutcomeToken[] storage _outcomes = outcomees[marketID];
-        ZuniswapV2Pair[] storage _pairs = pairss[marketID];
+        // TODO check that the rounding is correct
+        OutcomeToken[] storage _outcomes = outcomes[marketID];
+        ZuniswapV2Pair[] storage _pairs = pairs[marketID];
         for (uint256 i = 0; i < _outcomes.length; ++i) {
             mintForOutcome(
                 amount,
@@ -156,7 +157,9 @@ contract Markets {
             );
         }
         backingCoin.transferFrom(provider, address(this), amount);
-        // TODO mint LP token to provider
+        backing[marketID] += amount;
+        // initially: 1 LP token per 1$ of backing provided
+        lpTokens[marketID].mint(provider, amount);
     }
 
     function mintForOutcome(
@@ -178,13 +181,12 @@ contract Markets {
         uint256 amount,
         address provider
     ) public {
-        // TODO get USDC!
         uint256 multiplier = getMultiplier(marketID);
         uint256 sum = priceSum(marketID);
 
         // TODO check that the rounding is correct
-        OutcomeToken[] storage _outcomes = outcomees[marketID];
-        ZuniswapV2Pair[] storage _pairs = pairss[marketID];
+        OutcomeToken[] storage _outcomes = outcomes[marketID];
+        ZuniswapV2Pair[] storage _pairs = pairs[marketID];
         for (uint256 i = 0; i < _outcomes.length; ++i) {
             uint256 priceFraction = (price(marketID, i) * BASE18) / sum;
             mintForOutcome(
@@ -196,7 +198,12 @@ contract Markets {
             );
         }
         backingCoin.transferFrom(provider, address(this), amount);
-        // TODO mint LP token to provider
+        uint256 oldBacking = backing[marketID];
+        backing[marketID] += amount;
+        LPToken lpToken = lpTokens[marketID];
+        // Mint proportionally to backing (e.g. if doubling total backing, provider will end up
+        // owning half the total supply of the LP token).
+        lpToken.mint(provider, amount * BASE18 / oldBacking * lpToken.totalSupply() / BASE18);
     }
 
     function getMultiplier(uint256 marketID) public view returns (uint256) {
@@ -213,7 +220,7 @@ contract Markets {
         view
         returns (uint256)
     {
-        (uint112 outcomeAmount, uint112 stableAmount, ) = pairss[marketID][
+        (uint112 outcomeAmount, uint112 stableAmount, ) = pairs[marketID][
             index
         ].getReserves();
 
@@ -221,7 +228,7 @@ contract Markets {
     }
 
     function highestPrice(uint256 marketID) internal view returns (uint256) {
-        uint256 length = outcomees[marketID].length;
+        uint256 length = outcomes[marketID].length;
         uint256 max = 0;
         for (uint256 i = 0; i < length; ++i) {
             uint256 p = price(marketID, i);
@@ -231,7 +238,7 @@ contract Markets {
     }
 
     function priceSum(uint256 marketID) internal view returns (uint256) {
-        uint256 length = outcomees[marketID].length;
+        uint256 length = outcomes[marketID].length;
         uint256 sum = 0;
         for (uint256 i = 0; i < length; ++i) {
             sum += price(marketID, i);
