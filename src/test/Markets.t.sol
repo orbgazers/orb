@@ -1,11 +1,13 @@
 pragma solidity ^0.8.10;
 import "forge-std/Test.sol";
+import "../ERC20Mintable.sol";
 import "../Markets.sol";
 import "../OrbCoin.sol";
 import "../OutcomeToken.sol";
 
 contract MarketsTest is Test {
     OrbCoin private orbCoin;
+    ERC20Mintable private backingCoin;
     MarketInfo private abBalanced;
     MarketInfo private abUnbalanced;
     uint256 private constant BASE18 = 1 ether;
@@ -14,6 +16,7 @@ contract MarketsTest is Test {
 
     function setUp() public {
         orbCoin = new OrbCoin();
+        backingCoin = new ERC20Mintable("Backing", "BAK");
 
         string[] memory names = new string[](2);
         names[0] = "Token A";
@@ -51,7 +54,7 @@ contract MarketsTest is Test {
         abUnbalanced = abBase;
         abUnbalanced.initialPrices = prices2;
 
-        markets = new Markets(address(orbCoin));
+        markets = new Markets(address(orbCoin), address(backingCoin));
         orbCoin.setOwner(address(markets));
     }
 
@@ -64,6 +67,8 @@ contract MarketsTest is Test {
     }
 
     function createTestForInfo(MarketInfo storage info) internal {
+        backingCoin.mint(address(this), INITIAL_LIQUIDITY);
+        backingCoin.approve(address(markets), INITIAL_LIQUIDITY);
         uint256 id = markets.create(info);
         assertEq(id, 0);
         assertEq(id, markets.markets(id).id);
@@ -135,9 +140,14 @@ contract MarketsTest is Test {
     }
 
     function addLiquidityTestForInfo(MarketInfo storage info) internal {
+        backingCoin.mint(address(this), INITIAL_LIQUIDITY * 2);
+        backingCoin.approve(address(markets), INITIAL_LIQUIDITY * 2);
         uint256 id = markets.create(info);
         markets.addLiquidity(id, INITIAL_LIQUIDITY, address(this));
         verifyPair(id, 0, INITIAL_LIQUIDITY * 2, info.initialPrices[0]);
         verifyPair(id, 1, INITIAL_LIQUIDITY * 2, info.initialPrices[1]);
     }
+
+    // TODO:
+    // if not enough balance, transferFrom (on ERC20Mintable) fails with arithmetic over/underflow
 }

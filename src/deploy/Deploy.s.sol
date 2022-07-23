@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: BSD-3-Clause
-
 pragma solidity ^0.8.10;
-
 import "forge-std/Script.sol";
 import "../ZuniswapV2Factory.sol";
 import "../ZuniswapV2Router.sol";
 import "../OrbCoin.sol";
 import "../Markets.sol";
+import "../ERC20Mintable.sol";
 
 contract DeployLocal is Script {
     function run() external {
@@ -25,8 +23,12 @@ contract DeployLocal is Script {
         console2.log("Router address", router);
         address orbcoin = address(new OrbCoin());
         console2.log("Orbcoin address", orbcoin);
-        address markets = address(new Markets(orbcoin));
+        address backing = address(new ERC20Mintable("Backing", "BAK"));
+        console2.log("Backing token address", backing);
+        address markets = address(new Markets(orbcoin, backing));
         console2.log("Markets address", markets);
+
+        ERC20Mintable(backing).mint(msg.sender, 1000 ether);
 
         vm.stopBroadcast();
     }
@@ -45,13 +47,16 @@ contract DeployPublic is Script {
         // Not used for local deployments because it needs the CREATE2 deployer deployed at
         // 0x4e59b44847b379578588920ca78fbf26c0b4956c and that's not the case on the Anvil chain.
 
+        // USDC on Cronos
+        address usdc = 0xc21223249CA28397B4B6541dfFaEcC539BfF0c59;
+
         address factory = address(new ZuniswapV2Factory{salt: salt}());
         console2.log("Factory address: ", factory);
         address router = address(new ZuniswapV2Router{salt: salt}(factory));
         console2.log("Router address: ", router);
         address orbcoin = address(new OrbCoin{salt: salt}());
         console2.log("Orbcoin address", orbcoin);
-        address markets = address(new Markets{salt: salt}(orbcoin));
+        address markets = address(new Markets{salt: salt}(orbcoin, usdc));
         console2.log("Markets address", markets);
 
         vm.stopBroadcast();
