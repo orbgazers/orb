@@ -19,6 +19,7 @@
 		"@sveltejs/kit": "next",
 		"@typescript-eslint/eslint-plugin": "^5.27.0",
 		"@typescript-eslint/parser": "^5.27.0",
+		"date-picker-svelte": "^2.0.0",
 		"eslint": "^8.16.0",
 		"eslint-config-prettier": "^8.3.0",
 		"eslint-plugin-svelte3": "^4.0.0",
@@ -41,6 +42,8 @@
 		"ethers": "^5.6.9",
 		"rxjs": "^7.5.6",
 		"svelte-ethers-store": "^2.5.5",
-		"truncate-eth-address": "^1.0.2"
+		"svelte-forms-lib": "^2.0.1",
+		"truncate-eth-address": "^1.0.2",
+		"yup": "^0.32.11"
 	}
 }

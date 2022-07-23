@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Market, OutcomeToken } from '$lib/utils/market.model';
+	import type { Market } from '$lib/utils/market.model';
 import TokenInputField from './TokenInputField.svelte';
 
 	export let market: Market;

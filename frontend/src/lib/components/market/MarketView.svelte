@@ -44,14 +44,12 @@
 			</div>
 		</div>
 		<div class="el">
-			
-				{#if view === View.trade}
-					<Trade market={$market} />
-				{/if}
-				{#if view === View.liquidity}
-					<Liquidity market={$market} />
-				{/if}
-			
+			{#if view === View.trade}
+				<Trade market={$market} />
+			{/if}
+			{#if view === View.liquidity}
+				<Liquidity market={$market} />
+			{/if}
 		</div>
 	</div>
 {/if}

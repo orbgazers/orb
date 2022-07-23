@@ -1,0 +1,149 @@
+<script lang="ts">
+	import { createForm } from 'svelte-forms-lib';
+	import * as yup from 'yup/lib';
+	import { DateInput } from 'date-picker-svelte';
+	import { toOrdinalSuffix } from '$lib/utils/utils';
+	import type { MarketForm, OutcomeTokenForm } from '$lib/utils/market.model';
+
+	const initialToken: OutcomeTokenForm = {
+		name: '',
+		symbol: '',
+		price: null
+	};
+	const { form, errors, state, handleChange, handleSubmit } = createForm({
+		initialValues: {
+			title: '',
+			description: '',
+			closingDate: null,
+			settlementDate: null,
+			outcomeTokens: [{ ...initialToken }, { ...initialToken }]
+		} as MarketForm,
+		validationSchema: yup.object().shape({
+			title: yup.string().required(),
+			description: yup.string().required(),
+			closingDate: yup.string().required(),
+			settlementDate: yup.string().required(),
+			outcomeTokens: yup
+				.array(
+					yup.object().shape({
+						name: yup.string().required(),
+						symbol: yup.string().required(),
+						price: yup.number().required()
+					})
+				)
+				.min(2)
+		} as MarketForm),
+		onSubmit: (values) => {
+			console.log(values);
+		}
+	});
+
+	function addToken(_form: MarketForm) {
+		_form.outcomeTokens.push({ ...initialToken });
+		form.set(_form);
+    return null;
+	}
+</script>
+
+<h4 class="text-center">Create a prediction market</h4>
+<div class="d-flex justify-content-center">
+	<form on:submit={handleSubmit} novalidate>
+		<p class="label">Title (Question)</p>
+		<input
+			id="title"
+			name="title"
+			on:change={handleChange}
+			bind:value={$form.title}
+			placeholder="Title"
+			class:invalid={$errors.title}
+		/>
+
+		<p class="label">Description</p>
+		<input
+			id="description"
+			name="description"
+			on:change={handleChange}
+			bind:value={$form.description}
+			placeholder="Description"
+			class:invalid={$errors.description}
+		/>
+
+		{#each $form.outcomeTokens as token, i}
+			<p class="label mb-0">{toOrdinalSuffix(i + 1)} Answer</p>
+			<div class="row">
+				<div class="col-6">
+					<span>Answer</span>
+					<input bind:value={token.name} placeholder="Answer" />
+				</div>
+				<div class="col-3">
+					<span>Symbol</span>
+					<input bind:value={token.symbol} placeholder="Symbol" />
+				</div>
+				<div class="col">
+					<span>Price</span>
+					<input type="number" bind:value={token.price} placeholder="Initial Price" />
+				</div>
+			</div>
+		{/each}
+
+		<div class="d-flex justify-content-center mt-3">
+			<button
+				type="button"
+				class="btn btn-outline-primary"
+				on:click={addToken($form)}
+			>
+				<i class="bi bi-plus-lg" />
+				Add an Answer
+			</button>
+		</div>
+
+		<p class="label">Closing time</p>
+		<DateInput
+			bind:value={$form.closingDate}
+			format="yyyy-MM-dd HH:mm"
+			placeholder="Closing Time"
+		/>
+		{#if $errors.closingDate}
+			<small>{$errors.closingDate}</small>
+		{/if}
+
+		<p class="label">Settlement time</p>
+		<DateInput
+			bind:value={$form.settlementDate}
+			format="yyyy-MM-dd HH:mm"
+			placeholder="Settlement Time"
+		/>
+		{#if $errors.settlementDate}
+			<small>{$errors.settlementDate}</small>
+		{/if}
+
+		<div class="d-flex justify-content-center mt-3">
+			<button type="submit" class="btn btn-primary">Create</button>
+		</div>
+	</form>
+</div>
+
+<style lang="scss">
+	.label {
+		margin-top: 1.25em;
+		margin-bottom: 0.5em;
+		font-weight: bolder;
+	}
+
+	form,
+	:global(.date-time-field) {
+		width: 550px;
+
+		:global(input) {
+			width: 100%;
+			height: 46px;
+			padding: 8px 16px;
+			border: 1px solid #ced4da;
+			border-radius: 4.8px;
+
+			&.invalid {
+				border: 1px solid red;
+			}
+		}
+	}
+</style>
