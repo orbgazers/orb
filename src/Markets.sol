@@ -5,7 +5,7 @@ import "./ZuniswapV2Pair.sol";
 import {console2} from "forge-std/Test.sol";
 import "./LPToken.sol";
 
-    struct Market {
+struct Market {
     MarketInfo info;
 }
 
