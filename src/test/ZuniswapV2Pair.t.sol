@@ -4,7 +4,7 @@ pragma solidity ^0.8.10;
 import "forge-std/Test.sol";
 import "../ZuniswapV2Factory.sol";
 import "../ZuniswapV2Pair.sol";
-import "../mocks/ERC20Mintable.sol";
+import "../ERC20Mintable.sol";
 import "../libraries/UQ112x112.sol";
 
 contract ZuniswapV2PairTest is Test {

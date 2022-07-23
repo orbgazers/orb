@@ -46,12 +46,14 @@ contract Markets {
     ];
 
     OrbCoin public orbCoin;
+    IERC20 public backingCoin;
     Market[] public markets;
     mapping(uint256 => OutcomeToken[]) public outcomees;
     mapping(uint256 => ZuniswapV2Pair[]) public pairss;
 
-    constructor(address _orbCoin) {
+    constructor(address _orbCoin, address _backingCoin) {
         orbCoin = OrbCoin(_orbCoin);
+        backingCoin = IERC20(_backingCoin);
     }
 
     function create(MarketInfo calldata info) public returns (uint256) {
@@ -128,7 +130,6 @@ contract Markets {
         address provider,
         uint64[] calldata initialPrices
     ) internal {
-        // TODO get USDC!
         uint256 multiplier;
         {
             uint256 max = 0;
@@ -151,8 +152,8 @@ contract Markets {
                 _pairs[i]
             );
         }
+        backingCoin.transferFrom(provider, address(this), amount);
         // TODO mint LP token to provider
-        require(provider != address(0), "just to silence unused warning");
     }
 
     function mintForOutcome(
@@ -191,8 +192,8 @@ contract Markets {
                 _pairs[i]
             );
         }
+        backingCoin.transferFrom(provider, address(this), amount);
         // TODO mint LP token to provider
-        require(provider != address(0), "just to silence unused warning");
     }
 
     function getMultiplier(uint256 marketID) public view returns (uint256) {

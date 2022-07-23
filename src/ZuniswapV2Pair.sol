@@ -5,6 +5,7 @@ import "solmate/tokens/ERC20.sol";
 import "./libraries/Math.sol";
 import "./libraries/UQ112x112.sol";
 import "./interfaces/IZuniswapV2Callee.sol";
+import "./interfaces/IERC20.sol";
 
 error AlreadyInitialized();
 error BalanceOverflow();
@@ -15,12 +16,6 @@ error InsufficientLiquidityMinted();
 error InsufficientOutputAmount();
 error InvalidK();
 error TransferFailed();
-
-// prettier-ignore
-interface IERC20 {
-    function balanceOf(address) external returns (uint256);
-    function transfer(address to, uint256 amount) external;
-}
 
 contract ZuniswapV2Pair is ERC20, Math {
     using UQ112x112 for uint224;

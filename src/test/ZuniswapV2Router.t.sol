@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 import "../ZuniswapV2Factory.sol";
 import "../ZuniswapV2Pair.sol";
 import "../ZuniswapV2Router.sol";
-import "../mocks/ERC20Mintable.sol";
+import "../ERC20Mintable.sol";
 
 contract ZuniswapV2RouterTest is Test {
     ZuniswapV2Factory private factory;
