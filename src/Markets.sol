@@ -3,8 +3,9 @@ import "./OutcomeToken.sol";
 import "./OrbCoin.sol";
 import "./ZuniswapV2Pair.sol";
 import {console2} from "forge-std/Test.sol";
+import "./LPToken.sol";
 
-struct Market {
+    struct Market {
     MarketInfo info;
 }
 
@@ -50,6 +51,7 @@ contract Markets {
     Market[] public markets;
     mapping(uint256 => OutcomeToken[]) public outcomees;
     mapping(uint256 => ZuniswapV2Pair[]) public pairss;
+    mapping(uint256 => LPToken) public lpTokens;
 
     constructor(address _orbCoin, address _backingCoin) {
         orbCoin = OrbCoin(_orbCoin);
@@ -95,6 +97,7 @@ contract Markets {
         }
 
         uint64 id = uint64(markets.length);
+        lpTokens[id] = new LPToken(id);
         {
             uint256 sum = 0;
             OutcomeToken[] storage _outcomes = outcomees[id];
