@@ -1,10 +1,12 @@
 <script lang="ts">
-	import { markets } from '$lib/utils/market.store';
+	import { markets, fetchMarkets } from '$lib/utils/market.store';
 	import Time from 'svelte-time';
+	import {contracts} from 'svelte-ethers-store'
 </script>
 
 <div class="row g-3">
-	{#each $markets as market}
+	<button on:click="{fetchMarkets($contracts)}">Fetch</button>
+	{#each markets as market}
 		<div class="col-3">
 			<div class="market-card">
 				<a href="/market/{market.contractAddress}">

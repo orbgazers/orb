@@ -1,24 +1,26 @@
-import { Contract, FixedNumber } from "ethers";
+import { BigNumber, Contract, ethers, FixedNumber } from "ethers";
 import { contracts, defaultEvmStores } from "svelte-ethers-store";
 import { derived, writable, type Readable, type Writable } from "svelte/store";
 import type { Market } from "./market.model";
 
-export const markets: Writable<Market[]> = writable([]);
+export const markets: Market[] = [];
 
-fetch('/mocks/markets.json')
-  .then((response) => response.json())
-  .then((data) => {
-    markets.set(data);
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+// export const markets: Writable<Market[]> = writable([]);
 
-export function getMarket(id: string): Readable<Market | undefined> {
-  return derived(markets,
-    $markets => $markets.find(market => market.contractAddress === id)
-  )
-}
+// fetch('/mocks/markets.json')
+//   .then((response) => response.json())
+//   .then((data) => {
+//     markets.set(data);
+//   })
+//   .catch((error) => {
+//     console.log(error);
+//   });
+
+// export function getMarket(id: string): Readable<Market | undefined> {
+//   return derived(markets,
+//     $markets => $markets.find(market => market.contractAddress === id)
+//   )
+// }
 
 // export let _signerAddress: string;
 
@@ -55,23 +57,20 @@ export function createMarket(market: Market) {
       market.outcomeTokens.map(token => FixedNumber.fromString(token.price.toString()))
     ]).then(bla => console.log(bla));
   })
-  // let c = contract.create({
-  //   owner: market.creator,
-  //   stopTime: market.closingDate.valueOf(),
-  //   arbiter: market.arbiter,
-  //   settlementTime: market.settlementDate.valueOf(),
-  //   settlement: '0x0',
-  //   id: 0,
-  //   numOutcomes: market.outcomeTokens.length,
-  //   initialLiquidity: 10000,
-  //   name: market.title,
-  //   description: market.description,
-  //   outcomeNames: market.outcomeTokens.map(token => token.name),
-  //   outcomeSymbols: market.outcomeTokens.map(token => token.symbol),
-  //   initialPrices: market.outcomeTokens.map(token => token.price)
-  // }).then(bla => console.log(bla))
+}
 
-  console.log(c);
+export function fetchMarkets(contracts: Record<string, Contract>) {
+
+    if (!contracts.markets) return;
+    console.log(contracts);
+    console.log(contracts.markets);
+    // console.log(contracts.markets.functions.markets([]));
+    contracts.markets.numMarkets().then(result => console.log(result)).catch(e => console.log(e))
+      
+    
+    
+
+  return null;
 }
 
 
