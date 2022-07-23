@@ -58,33 +58,56 @@ contract MarketsTest is Test {
     function testCreateBalanced() public {
         uint256 id = markets.create(abBalanced);
         assertEq(id, 0);
+        assertEq(id, markets.markets(id).id);
         assertTrue(markets.pairss(id, 0) != markets.pairss(id, 1));
         verifyPair(id, 0);
         verifyPair(id, 1);
     }
 
     function testCreateUnbalanced() public {
-        //        uint256 id = markets.create(abUnbalanced);
-        //        assertEq(id, 0);
-        //        assertTrue(markets.pairss(id, 0) != markets.pairss(id, 1));
-        //        verifyPair(id, 0);
-        //        verifyPair(id, 1);
+        uint256 id = markets.create(abUnbalanced);
+        assertEq(id, 0);
+        assertEq(id, markets.markets(id).id);
+        assertTrue(markets.pairss(id, 0) != markets.pairss(id, 1));
+        verifyPair(id, 0);
+        verifyPair(id, 1);
     }
 
     function verifyPair(uint256 id, uint256 i) internal {
-        assertEq(markets.price(id, i), BASE18 / 2);
+        MarketInfo memory info = markets.markets(id);
 
         ZuniswapV2Pair pair = markets.pairss(id, i);
         OutcomeToken outcome = markets.outcomees(id, i);
 
         assertEq(pair.token0(), address(outcome));
         assertEq(pair.token1(), address(orbCoin));
+
         // NOTE: 1000 is the Uniswap minimum liquidity
         assertEq(pair.balanceOf(address(this)), pair.totalSupply() - 1000);
 
-        // NOTE: 10k liquidity → 2x multiplier, each pool has 10k outcome tokens and 20k orb coins
-        assertEq(outcome.totalSupply(), INITIAL_LIQUIDITY * 2);
-        assertEq(outcome.balanceOf(address(pair)), INITIAL_LIQUIDITY * 2);
-        assertEq(orbCoin.balanceOf(address(pair)), INITIAL_LIQUIDITY);
+        uint256 price = markets.price(id, i);
+        assertEq(price, info.initialPrices[i]);
+
+        // two scenarios: balanced (50/50), unbalanced (10/90)
+        bool balanced = info.initialPrices[i] == BASE18 / 2;
+
+        uint256 multiplier = markets.getMultiplier(id);
+        assertEq(multiplier, balanced ? (BASE18 * 2) : (BASE18 * 100) / 70);
+
+        // E.G. 50/50 pool, 10k liquidity, and 2x multiplier → 20k bundles
+        //      20k outcome tokens (0.5$ each) and 10k ORB per pool
+        //      each pool is worth 20k$
+        assertEq(
+            outcome.totalSupply(),
+            (INITIAL_LIQUIDITY * multiplier) / BASE18
+        );
+        assertEq(
+            outcome.balanceOf(address(pair)),
+            (INITIAL_LIQUIDITY * multiplier) / BASE18
+        );
+        assertEq(
+            orbCoin.balanceOf(address(pair)),
+            (((INITIAL_LIQUIDITY * multiplier) / BASE18) * price) / BASE18
+        );
     }
 }
