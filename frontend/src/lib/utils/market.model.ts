@@ -5,10 +5,13 @@ export interface Market {
   closingDate: Date;
   settlementDate: Date;
   contractAddress: string;
-  creator?: ContractInfo;
-  arbiter?: ContractInfo;
+  creator: ContractInfo;
+  arbiter: ContractInfo;
   outcomeTokens: OutcomeToken[];
 }
+
+export type MarketKey = keyof Market;
+export type MarketForm = { [id in MarketKey]: any }
 
 export interface ContractInfo {
   address: string;
@@ -17,5 +20,8 @@ export interface ContractInfo {
 
 export interface OutcomeToken {
   name: string;
+  symbol: string;
   price: number;
 }
+
+export type OutcomeTokenForm = {[id in keyof OutcomeToken]: any}
