@@ -59,6 +59,15 @@ contract Markets {
         backingCoin = IERC20(_backingCoin);
     }
 
+    function numMarkets() external view returns (uint256) {
+        return markets.length;
+    }
+
+    function getMarketList() external view returns (Market[] memory) {
+        Market[] memory _markets = markets;
+        return _markets;
+    }
+
     function create(MarketInfo calldata info) public returns (uint256) {
         // prettier-ignore
         {
@@ -180,7 +189,7 @@ contract Markets {
         uint256 marketID,
         uint256 amount,
         address provider
-    ) public {
+    ) external {
         uint256 multiplier = getMultiplier(marketID);
         uint256 sum = priceSum(marketID);
 
@@ -203,7 +212,10 @@ contract Markets {
         LPToken lpToken = lpTokens[marketID];
         // Mint proportionally to backing (e.g. if doubling total backing, provider will end up
         // owning half the total supply of the LP token).
-        lpToken.mint(provider, amount * BASE18 / oldBacking * lpToken.totalSupply() / BASE18);
+        lpToken.mint(
+            provider,
+            (((amount * BASE18) / oldBacking) * lpToken.totalSupply()) / BASE18
+        );
     }
 
     function getMultiplier(uint256 marketID) public view returns (uint256) {
@@ -220,9 +232,8 @@ contract Markets {
         view
         returns (uint256)
     {
-        (uint112 outcomeAmount, uint112 stableAmount, ) = pairs[marketID][
-            index
-        ].getReserves();
+        (uint112 outcomeAmount, uint112 stableAmount, ) = pairs[marketID][index]
+            .getReserves();
 
         return (stableAmount * BASE18) / outcomeAmount;
     }
