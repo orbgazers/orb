@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { markets, fetchMarkets } from '$lib/utils/market.store';
 	import Time from 'svelte-time';
-	import {contracts} from 'svelte-ethers-store'
 </script>
 
 <div class="row g-3">
-	<button on:click="{fetchMarkets($contracts)}">Fetch</button>
+	<button on:click="{fetchMarkets()}">Fetch</button>
 	{#each markets as market}
 		<div class="col-3">
 			<div class="market-card">
