@@ -143,13 +143,25 @@ contract Markets {
         OutcomeToken[] storage _outcomes = outcomees[marketID];
         ZuniswapV2Pair[] storage _pairs = pairss[marketID];
         for (uint256 i = 0; i < _outcomes.length; ++i) {
-            mintForOutcome(amount, multiplier, initialPrices[i], _outcomes[i], _pairs[i]);
+            mintForOutcome(
+                amount,
+                multiplier,
+                initialPrices[i],
+                _outcomes[i],
+                _pairs[i]
+            );
         }
         // TODO mint LP token to provider
-        require(provider != address(0)); // just to silence unused warning
+        require(provider != address(0), "just to silence unused warning");
     }
 
-    function mintForOutcome(uint256 amount, uint256 multiplier, uint256 priceFraction, OutcomeToken outcome, ZuniswapV2Pair pair) internal {
+    function mintForOutcome(
+        uint256 amount,
+        uint256 multiplier,
+        uint256 priceFraction,
+        OutcomeToken outcome,
+        ZuniswapV2Pair pair
+    ) internal {
         uint256 mintAmount = (amount * multiplier) / BASE18;
         outcome.mint(address(pair), mintAmount);
         mintAmount = (mintAmount * priceFraction) / BASE18;
@@ -171,10 +183,16 @@ contract Markets {
         ZuniswapV2Pair[] storage _pairs = pairss[marketID];
         for (uint256 i = 0; i < _outcomes.length; ++i) {
             uint256 priceFraction = (price(marketID, i) * BASE18) / sum;
-            mintForOutcome(amount, multiplier, priceFraction, _outcomes[i], _pairs[i]);
+            mintForOutcome(
+                amount,
+                multiplier,
+                priceFraction,
+                _outcomes[i],
+                _pairs[i]
+            );
         }
         // TODO mint LP token to provider
-        require(provider != address(0)); // just to silence unused warning
+        require(provider != address(0), "just to silence unused warning");
     }
 
     function getMultiplier(uint256 marketID) public view returns (uint256) {

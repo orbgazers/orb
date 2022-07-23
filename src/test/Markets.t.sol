@@ -72,7 +72,12 @@ contract MarketsTest is Test {
         verifyPair(id, 1, INITIAL_LIQUIDITY, info.initialPrices[1]);
     }
 
-    function verifyPair(uint256 id, uint256 i, uint256 liquidity, uint256 expectedPrice) internal {
+    function verifyPair(
+        uint256 id,
+        uint256 i,
+        uint256 liquidity,
+        uint256 expectedPrice
+    ) internal {
         MarketInfo memory info = markets.markets(id);
 
         ZuniswapV2Pair pair = markets.pairss(id, i);
@@ -82,7 +87,11 @@ contract MarketsTest is Test {
         assertEq(pair.token1(), address(orbCoin), "bad token 1");
 
         // NOTE: 1000 is the Uniswap minimum liquidity
-        assertEq(pair.balanceOf(address(markets)), pair.totalSupply() - 1000, "bad pair balance");
+        assertEq(
+            pair.balanceOf(address(markets)),
+            pair.totalSupply() - 1000,
+            "bad pair balance"
+        );
 
         uint256 price = markets.price(id, i);
         assertEq(price, expectedPrice, "bad price");
@@ -91,7 +100,11 @@ contract MarketsTest is Test {
         bool balanced = info.initialPrices[i] == BASE18 / 2;
 
         uint256 multiplier = markets.getMultiplier(id);
-        assertEq(multiplier, balanced ? (BASE18 * 2) : (BASE18 * 100) / 70, "bad multiplier");
+        assertEq(
+            multiplier,
+            balanced ? (BASE18 * 2) : (BASE18 * 100) / 70,
+            "bad multiplier"
+        );
 
         // E.G. 50/50 pool, 10k liquidity, and 2x multiplier → 20k bundles
         //      20k outcome tokens (0.5$ each) and 10k ORB per pool
