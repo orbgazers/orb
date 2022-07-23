@@ -56,58 +56,75 @@ contract MarketsTest is Test {
     }
 
     function testCreateBalanced() public {
-        uint256 id = markets.create(abBalanced);
-        assertEq(id, 0);
-        assertEq(id, markets.markets(id).id);
-        assertTrue(markets.pairss(id, 0) != markets.pairss(id, 1));
-        verifyPair(id, 0);
-        verifyPair(id, 1);
+        createTestForInfo(abBalanced);
     }
 
     function testCreateUnbalanced() public {
-        uint256 id = markets.create(abUnbalanced);
+        createTestForInfo(abUnbalanced);
+    }
+
+    function createTestForInfo(MarketInfo storage info) internal {
+        uint256 id = markets.create(info);
         assertEq(id, 0);
         assertEq(id, markets.markets(id).id);
         assertTrue(markets.pairss(id, 0) != markets.pairss(id, 1));
-        verifyPair(id, 0);
-        verifyPair(id, 1);
+        verifyPair(id, 0, INITIAL_LIQUIDITY, info.initialPrices[0]);
+        verifyPair(id, 1, INITIAL_LIQUIDITY, info.initialPrices[1]);
     }
 
-    function verifyPair(uint256 id, uint256 i) internal {
+    function verifyPair(uint256 id, uint256 i, uint256 liquidity, uint256 expectedPrice) internal {
         MarketInfo memory info = markets.markets(id);
 
         ZuniswapV2Pair pair = markets.pairss(id, i);
         OutcomeToken outcome = markets.outcomees(id, i);
 
-        assertEq(pair.token0(), address(outcome));
-        assertEq(pair.token1(), address(orbCoin));
+        assertEq(pair.token0(), address(outcome), "bad token 0");
+        assertEq(pair.token1(), address(orbCoin), "bad token 1");
 
         // NOTE: 1000 is the Uniswap minimum liquidity
-        assertEq(pair.balanceOf(address(this)), pair.totalSupply() - 1000);
+        assertEq(pair.balanceOf(address(markets)), pair.totalSupply() - 1000, "bad pair balance");
 
         uint256 price = markets.price(id, i);
-        assertEq(price, info.initialPrices[i]);
+        assertEq(price, expectedPrice, "bad price");
 
         // two scenarios: balanced (50/50), unbalanced (10/90)
         bool balanced = info.initialPrices[i] == BASE18 / 2;
 
         uint256 multiplier = markets.getMultiplier(id);
-        assertEq(multiplier, balanced ? (BASE18 * 2) : (BASE18 * 100) / 70);
+        assertEq(multiplier, balanced ? (BASE18 * 2) : (BASE18 * 100) / 70, "bad multiplier");
 
         // E.G. 50/50 pool, 10k liquidity, and 2x multiplier → 20k bundles
         //      20k outcome tokens (0.5$ each) and 10k ORB per pool
         //      each pool is worth 20k$
         assertEq(
             outcome.totalSupply(),
-            (INITIAL_LIQUIDITY * multiplier) / BASE18
+            (liquidity * multiplier) / BASE18,
+            "bad outcome supply"
         );
         assertEq(
             outcome.balanceOf(address(pair)),
-            (INITIAL_LIQUIDITY * multiplier) / BASE18
+            (liquidity * multiplier) / BASE18,
+            "bad outcome balance"
         );
         assertEq(
             orbCoin.balanceOf(address(pair)),
-            (((INITIAL_LIQUIDITY * multiplier) / BASE18) * price) / BASE18
+            (((liquidity * multiplier) / BASE18) * price) / BASE18,
+            "bad orb balance"
         );
+    }
+
+    function testAddLiquidityBalanced() public {
+        addLiquidityTestForInfo(abBalanced);
+    }
+
+    function testAddLiquidityUnbalanced() public {
+        addLiquidityTestForInfo(abUnbalanced);
+    }
+
+    function addLiquidityTestForInfo(MarketInfo storage info) internal {
+        uint256 id = markets.create(info);
+        markets.addLiquidity(id, INITIAL_LIQUIDITY, address(this));
+        verifyPair(id, 0, INITIAL_LIQUIDITY * 2, info.initialPrices[0]);
+        verifyPair(id, 1, INITIAL_LIQUIDITY * 2, info.initialPrices[1]);
     }
 }
