@@ -17,6 +17,14 @@ build:
 	forge build
 .PHONY: build
 
+abi:
+	make build
+	mkdir -p frontend/static/abi
+	forge inspect Markets abi > frontend/static/abi/Markets.json
+	forge inspect OrbCoin abi > frontend/static/abi/OrbCoin.json
+	forge inspect OutcomeToken abi > frontend/static/abi/OutcomeToken.json
+.PHONY: build
+
 clean:
 	forge clean
 .PHONY: clean

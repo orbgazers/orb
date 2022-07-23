@@ -11,6 +11,7 @@ node_modules/
 cache/
 out/
 broadcast/
+frontend/static/abi/
 
 # IDEs
 .idea/
