@@ -53,10 +53,13 @@
 	<form>
 		<p>Amount</p>
 		<div class="gray-field d-flex align-content-between">
-			<input type="text" placeholder="0.0" class="text-truncate" />
+			<div class="w-100">
+				<input type="number" placeholder="0.0" class="text-truncate" />
+			</div>
+
 			<div class="d-flex align-items-center">
-        <img class="me-1" src="/img/usdc.webp"/>
-        <span>USDC</span>
+				<img class="me-1" src="/img/usdc.webp" />
+				<span>USDC</span>
 				<!-- {#if $connected}
 							{#await $signer.getBalance() then balance}
 								Balance: {formatEth(balance)}
@@ -94,12 +97,12 @@
 			border: none;
 			outline: none;
 			background: none;
-			font-family: 'Courier New', Courier, monospace;
+			font-family: monospace;
 			font-size: 24px;
 		}
 
-    img {
-      height: 18px;
-    }
+		img {
+			height: 18px;
+		}
 	}
 </style>
