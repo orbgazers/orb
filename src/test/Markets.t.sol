@@ -6,7 +6,8 @@ import "../OutcomeToken.sol";
 
 contract MarketsTest is Test {
     OrbCoin private orbCoin;
-    MarketInfo private ab;
+    MarketInfo private abBalanced;
+    MarketInfo private abUnbalanced;
     uint256 private constant BASE18 = 1 ether;
     uint256 private constant INITIAL_LIQUIDITY = 10_000 * BASE18;
     Markets private markets;
@@ -26,7 +27,7 @@ contract MarketsTest is Test {
         prices[0] = uint64(BASE18 / 2);
         prices[1] = uint64(BASE18 / 2);
 
-        ab = MarketInfo({
+        MarketInfo memory abBase = MarketInfo({
             name: "AB",
             description: "it's A or B, baby",
             owner: address(this),
@@ -42,16 +43,32 @@ contract MarketsTest is Test {
             initialPrices: prices
         });
 
+        abBalanced = abBase;
+
+        uint64[] memory prices2 = new uint64[](2);
+        prices2[0] = uint64((BASE18 * 9) / 10);
+        prices2[1] = uint64(BASE18 / 10);
+        abUnbalanced = abBase;
+        abUnbalanced.initialPrices = prices2;
+
         markets = new Markets(address(orbCoin));
         orbCoin.setOwner(address(markets));
     }
 
     function testCreateBalanced() public {
-        uint256 id = markets.create(ab);
+        uint256 id = markets.create(abBalanced);
         assertEq(id, 0);
         assertTrue(markets.pairss(id, 0) != markets.pairss(id, 1));
         verifyPair(id, 0);
         verifyPair(id, 1);
+    }
+
+    function testCreateUnbalanced() public {
+        //        uint256 id = markets.create(abUnbalanced);
+        //        assertEq(id, 0);
+        //        assertTrue(markets.pairss(id, 0) != markets.pairss(id, 1));
+        //        verifyPair(id, 0);
+        //        verifyPair(id, 1);
     }
 
     function verifyPair(uint256 id, uint256 i) internal {
