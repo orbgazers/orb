@@ -2,26 +2,32 @@ pragma solidity ^0.8.10;
 import "./OutcomeToken.sol";
 import "./OrbCoin.sol";
 import "./ZuniswapV2Pair.sol";
-
-struct MarketInfo {
-    string name;
-    string description;
-    address owner;
-    address arbiter;
-    address settlement;
-    string[] outcomeNames;
-    string[] outcomeSymbols;
-    uint256 initialLiquidity;
-    uint64 stopTime;
-    uint64 settlementTime;
-    uint64[] initialPrices;
-}
+import {console2} from "forge-std/Test.sol";
 
 struct Market {
     MarketInfo info;
-    // NOTE: this could be read from pairs to preserve storage if required
-    OutcomeToken[] outcomes;
-    ZuniswapV2Pair[] pairs;
+}
+
+struct MarketInfo {
+    // slot 1
+    address owner;
+    uint64 stopTime;
+
+    // slot 2
+    address arbiter;
+    uint64 settlementTime;
+
+    // slot 3
+    address settlement;
+    uint64 id;
+    uint8 numOutcomes;
+
+    uint256 initialLiquidity;
+    string name;
+    string description;
+    string[] outcomeNames;
+    string[] outcomeSymbols;
+    uint64[] initialPrices;
 }
 
 contract Markets {
@@ -29,10 +35,22 @@ contract Markets {
     uint256 public constant MIN_LIQUIDITY = 10_000;
     uint256 public constant BASE18 = 1 ether;
     // TODO pick better values experimentally
-    uint256[] private multipliers = [70, 65, 60, 55, 50, 45, 40, 35, 30, 20];
+    uint256[] private multipliers = [
+        BASE18 * 100 / 20,
+        BASE18 * 100 / 30,
+        BASE18 * 100 / 35,
+        BASE18 * 100 / 40,
+        BASE18 * 100 / 45,
+        BASE18 * 100 / 50,
+        BASE18 * 100 / 55,
+        BASE18 * 100 / 60,
+        BASE18 * 100 / 65,
+        BASE18 * 100 / 70];
 
     OrbCoin public orbCoin;
     Market[] public markets;
+    mapping(uint256 => OutcomeToken[]) public outcomees;
+    mapping(uint256 => ZuniswapV2Pair[]) public pairss;
 
     constructor(address _orbCoin) {
         orbCoin = OrbCoin(_orbCoin);
@@ -45,14 +63,23 @@ contract Markets {
                 bytes(info.name).length > 0,
                 "empty name");
             require(
-                info.outcomeNames.length == info.outcomeSymbols.length,
+                info.numOutcomes >= 2,
+                "not enough outcomes");
+            require(
+                info.numOutcomes == info.outcomeNames.length,
                 "unconsistent lengths");
             require(
-                info.outcomeNames.length >= 2,
-                "not enough outcomes");
+                info.numOutcomes == info.outcomeSymbols.length,
+                "unconsistent lengths");
+            require(
+                info.numOutcomes == info.initialPrices.length,
+                "unconsistent lengths");
             require(
                 info.initialLiquidity >= MIN_LIQUIDITY,
                 "insufficient liquidity");
+            require(
+                info.owner != address(0),
+                "0 address owner");
             require(
                 info.arbiter != address(0),
                 "0 address arbiter");
@@ -64,29 +91,61 @@ contract Markets {
                 "stop time in the past");
             require(
                 info.settlementTime >= info.stopTime,
-                "settlement time in the past");
+                "settlement time before stop time");
         }
 
-        OutcomeToken[] memory outcomes = new OutcomeToken[](
-            info.outcomeNames.length
-        );
-        ZuniswapV2Pair[] memory pairs = new ZuniswapV2Pair[](
-            info.outcomeNames.length
-        );
-        for (uint256 i = 0; i < info.outcomeNames.length; ++i) {
-            outcomes[i] = new OutcomeToken(
-                info.outcomeNames[i],
-                info.outcomeSymbols[i]
+        uint64 id = uint64(markets.length);
+        {
+            uint256 sum = 0;
+            OutcomeToken[] storage _outcomes = outcomees[id];
+            ZuniswapV2Pair[] storage _pairs = pairss[id];
+            for (uint256 i = 0; i < info.outcomeNames.length; ++i) {
+                _outcomes.push(new OutcomeToken(
+                    info.outcomeNames[i],
+                    info.outcomeSymbols[i]
+                ));
+                _pairs.push(new ZuniswapV2Pair());
+                _pairs[i].initialize(address(_outcomes[i]), address(orbCoin));
+                sum += info.initialPrices[i];
+            }
+            require(sum == BASE18, "price sum is not $1");
+        }
+
+        markets.push(Market(info));
+        markets[id].info.id = id;
+        addInitialLiquidity(id, info.initialLiquidity, info.owner, info.initialPrices);
+        return id;
+    }
+
+    function addInitialLiquidity(uint256 marketID, uint256 amount, address provider, uint64[] calldata initialPrices) internal {
+        // TODO get USDC!
+        uint256 multiplier;
+        {
+            uint256 max = 0;
+            for (uint256 i = 0; i < initialPrices.length; ++i) {
+                uint256 p = initialPrices[i];
+                if (p > max) max = p;
+            }
+            multiplier = multipliers[max * 10 / BASE18];
+        }
+
+        // TODO check that the rounding is correct
+        OutcomeToken[] storage _outcomes = outcomees[marketID];
+        ZuniswapV2Pair[] storage _pairs = pairss[marketID];
+        for (uint256 i = 0; i < _outcomes.length; ++i) {
+            uint256 priceFraction = initialPrices[i];
+            ZuniswapV2Pair pair = _pairs[i];
+            orbCoin.mint(address(pair), (amount * multiplier) / BASE18);
+            uint256 mintAmount = amount * multiplier;
+            mintAmount /= BASE18;
+            mintAmount *= priceFraction;
+            mintAmount /= BASE18;
+            _outcomes[i].mint(
+                address(pair),
+                mintAmount
             );
-            pairs[i] = new ZuniswapV2Pair();
-            pairs[i].initialize(address(outcomes[i]), address(orbCoin));
+            pair.mint(provider);
         }
-
-        Market memory market = Market(info, outcomes, pairs);
-        markets.push(market);
-        uint256 marketID = markets.length;
-        addLiquidity(marketID, info.initialLiquidity, info.owner);
-        return marketID;
     }
 
     function addLiquidity(
@@ -94,16 +153,18 @@ contract Markets {
         uint256 amount,
         address provider
     ) public {
-        Market storage market = markets[marketID];
+        // TODO get USDC!
         uint256 multiplier = getMultiplier(marketID);
         uint256 sum = priceSum(marketID);
 
         // TODO check that the rounding is correct
-        for (uint256 i = 0; i < market.outcomes.length; ++i) {
-            uint256 priceFraction = price(marketID, i) / sum;
-            ZuniswapV2Pair pair = market.pairs[i];
+        OutcomeToken[] storage _outcomes = outcomees[marketID];
+        ZuniswapV2Pair[] storage _pairs = pairss[marketID];
+        for (uint256 i = 0; i < _outcomes.length; ++i) {
+            uint256 priceFraction = price(marketID, i) * BASE18 / sum;
+            ZuniswapV2Pair pair = _pairs[i];
             orbCoin.mint(address(pair), (amount * multiplier) / BASE18);
-            market.outcomes[i].mint(
+            _outcomes[i].mint(
                 address(pair),
                 (((amount * multiplier) / BASE18) * priceFraction) / BASE18
             );
@@ -125,14 +186,14 @@ contract Markets {
         view
         returns (uint256)
     {
-        (uint112 outcomeAmount, uint112 stableAmount, ) = markets[marketID]
-            .pairs[index]
+        (uint112 outcomeAmount, uint112 stableAmount, ) = pairss[marketID][index]
             .getReserves();
+
         return (outcomeAmount * BASE18) / stableAmount;
     }
 
     function highestPrice(uint256 marketID) internal view returns (uint256) {
-        uint256 length = markets[marketID].outcomes.length;
+        uint256 length = outcomees[marketID].length;
         uint256 max = 0;
         for (uint256 i = 0; i < length; ++i) {
             uint256 p = price(marketID, i);
@@ -142,7 +203,7 @@ contract Markets {
     }
 
     function priceSum(uint256 marketID) internal view returns (uint256) {
-        uint256 length = markets[marketID].outcomes.length;
+        uint256 length = outcomees[marketID].length;
         uint256 sum = 0;
         for (uint256 i = 0; i < length; ++i) {
             sum += price(marketID, i);
