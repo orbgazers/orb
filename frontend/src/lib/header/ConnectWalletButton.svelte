@@ -1,11 +1,16 @@
 <script lang="ts">
 	import { chainData, formatEth, metamaskAvatar } from '$lib/utils/utils';
-	import { connected, defaultEvmStores, signerAddress, signer } from 'svelte-ethers-store';
+import { ethers } from 'ethers';
+	import { connected, defaultEvmStores, signerAddress, signer, contracts, provider } from 'svelte-ethers-store';
 	import truncateEthAddress from 'truncate-eth-address';
 
 	function connectToWallet() {
 		defaultEvmStores.setProvider();
 	}
+
+	contracts.subscribe(c => console.log(c));
+signer.subscribe(c => console.log(c));
+provider.subscribe(c => console.log(c));
 
 	// async function getBalance(): Promise<string | null> {
 	// 	if (!$signer) return null;
