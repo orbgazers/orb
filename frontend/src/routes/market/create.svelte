@@ -4,6 +4,7 @@
 	import { DateInput } from 'date-picker-svelte';
 	import { toOrdinalSuffix } from '$lib/utils/utils';
 	import type { MarketForm, OutcomeTokenForm } from '$lib/utils/market.model';
+	import { createMarket } from '$lib/utils/market.store';
 
 	const initialToken: OutcomeTokenForm = {
 		name: '',
@@ -14,6 +15,7 @@
 		initialValues: {
 			title: '',
 			description: '',
+			arbiter: '0x88c17fd2Df5C1BCcA07a391A3B734174063acbdf',
 			closingDate: null,
 			settlementDate: null,
 			outcomeTokens: [{ ...initialToken }, { ...initialToken }]
@@ -21,6 +23,7 @@
 		validationSchema: yup.object().shape({
 			title: yup.string().required(),
 			description: yup.string().required(),
+			arbiter: yup.string().required(),
 			closingDate: yup.string().required(),
 			settlementDate: yup.string().required(),
 			outcomeTokens: yup
@@ -41,7 +44,7 @@
 			);
 		},
 		onSubmit: (values) => {
-			console.log(values);
+			createMarket(values);
 		}
 	});
 
@@ -56,7 +59,6 @@
 		form.set(_form);
 		return null;
 	}
-
 </script>
 
 <h4 class="text-center">Create a prediction market</h4>
@@ -114,6 +116,16 @@
 				Add an Answer
 			</button>
 		</div>
+
+		<p class="label">Arbiter</p>
+		<input
+			id="arbiter"
+			name="arbiter"
+			on:change={handleChange}
+			bind:value={$form.arbiter}
+			placeholder="Arbiter"
+			class:invalid={$errors.arbiter}
+		/>
 
 		<p class="label">Closing time</p>
 		<DateInput
