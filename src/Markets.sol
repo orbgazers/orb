@@ -180,7 +180,7 @@ contract Markets {
         }
     }
 
-    function getMultiplier(uint256 marketID) internal view returns (uint256) {
+    function getMultiplier(uint256 marketID) public view returns (uint256) {
         uint256 highest = highestPrice(marketID);
         // normalize to [0, 9]
         highest = (highest * 10) / BASE18;
