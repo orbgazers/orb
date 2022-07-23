@@ -20,8 +20,9 @@ Tooling required:
 - `make test` - run tests
 - `make testgas` - run tests and show gas report
 - `make watch` - re-run tests whenever files change
+- `make anvil` - run the Anvil local devnet
 - `make deploy-local` - deploy contracts locally for testing
-    - before, run `cp .env.example .env` then `anvil` (in a separate terminal)
+    - before, run `cp .env.example .env` then `make anvil` (in a separate terminal)
 
 ## Credits
 
