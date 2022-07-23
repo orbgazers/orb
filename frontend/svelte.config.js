@@ -7,7 +7,8 @@ const config = {
 	// for more information about preprocessors
 	preprocess: preprocess({
 		scss: {
-			prependData: `//@ts-ignore
+			prependData: `
+			//@ts-ignore
 				@import './src/scss/variables.scss';`
 		}
 	}),
