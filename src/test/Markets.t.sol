@@ -74,7 +74,7 @@ contract MarketsTest is Test {
         assertEq(backingCoin.balanceOf(address(markets)), INITIAL_LIQUIDITY);
         assertEq(id, 0);
         assertEq(id, markets.markets(id).id);
-        assertTrue(markets.pairss(id, 0) != markets.pairss(id, 1));
+        assertTrue(markets.pairs(id, 0) != markets.pairs(id, 1));
         verifyPair(id, 0, INITIAL_LIQUIDITY, info.initialPrices[0]);
         verifyPair(id, 1, INITIAL_LIQUIDITY, info.initialPrices[1]);
     }
@@ -87,8 +87,8 @@ contract MarketsTest is Test {
     ) internal {
         MarketInfo memory info = markets.markets(id);
 
-        ZuniswapV2Pair pair = markets.pairss(id, i);
-        OutcomeToken outcome = markets.outcomees(id, i);
+        ZuniswapV2Pair pair = markets.pairs(id, i);
+        OutcomeToken outcome = markets.outcomes(id, i);
 
         assertEq(pair.token0(), address(outcome), "bad token 0");
         assertEq(pair.token1(), address(orbCoin), "bad token 1");
