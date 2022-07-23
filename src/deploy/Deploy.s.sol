@@ -5,6 +5,8 @@ pragma solidity ^0.8.10;
 import "forge-std/Script.sol";
 import "../ZuniswapV2Factory.sol";
 import "../ZuniswapV2Router.sol";
+import "../OrbCoin.sol";
+import "../Markets.sol";
 
 contract DeployLocal is Script {
     function run() external {
@@ -21,6 +23,10 @@ contract DeployLocal is Script {
         console2.log("Factory address", factory);
         address router = address(new ZuniswapV2Router(factory));
         console2.log("Router address", router);
+        address orbcoin = address(new OrbCoin());
+        console2.log("Orbcoin address", orbcoin);
+        address markets = address(new Markets(orbcoin));
+        console2.log("Markets address", markets);
 
         vm.stopBroadcast();
     }
@@ -43,6 +49,10 @@ contract DeployPublic is Script {
         console2.log("Factory address: ", factory);
         address router = address(new ZuniswapV2Router{salt: salt}(factory));
         console2.log("Router address: ", router);
+        address orbcoin = address(new OrbCoin{salt: salt}());
+        console2.log("Orbcoin address", orbcoin);
+        address markets = address(new Markets{salt: salt}(orbcoin));
+        console2.log("Markets address", markets);
 
         vm.stopBroadcast();
     }
