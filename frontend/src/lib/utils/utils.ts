@@ -21,7 +21,7 @@ export const metamaskAvatar: Readable<string> = derived(
   signerAddress,
   $signerAddress => {
     if (!$signerAddress) return '';
-    const av: HTMLDivElement = jazzicon(16, parseInt($signerAddress.slice(2, 10), 16));
+    const av: HTMLDivElement = jazzicon(36, parseInt($signerAddress.slice(2, 10), 16));
     // TODO: wtf, figure this out later
     av.getElementsByTagName('svg').item(0)?.setAttribute('style', 'margin-bottom: 50%;');
     return av.outerHTML;
