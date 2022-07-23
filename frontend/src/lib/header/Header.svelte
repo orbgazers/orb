@@ -9,7 +9,7 @@
 			<h2 class="fw-bold">The Pondering Orb</h2>
 		</div>
 
-		<div class="col-auto d-flex justify-content-end">
+		<div class="col-auto d-flex justify-content-end align-items-center">
 			<a href="/market/create"
 				><button type="button" class="btn btn-outline-primary me-3">Create a Market</button>
 			</a>
