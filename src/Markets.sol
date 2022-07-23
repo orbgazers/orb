@@ -135,15 +135,10 @@ contract Markets {
         for (uint256 i = 0; i < _outcomes.length; ++i) {
             uint256 priceFraction = initialPrices[i];
             ZuniswapV2Pair pair = _pairs[i];
-            orbCoin.mint(address(pair), (amount * multiplier) / BASE18);
-            uint256 mintAmount = amount * multiplier;
-            mintAmount /= BASE18;
-            mintAmount *= priceFraction;
-            mintAmount /= BASE18;
-            _outcomes[i].mint(
-                address(pair),
-                mintAmount
-            );
+            uint256 mintAmount = amount * multiplier / BASE18;
+            _outcomes[i].mint(address(pair), mintAmount);
+            mintAmount = mintAmount * priceFraction / BASE18;
+            orbCoin.mint(address(pair), mintAmount);
             pair.mint(provider);
         }
     }
@@ -163,7 +158,7 @@ contract Markets {
         for (uint256 i = 0; i < _outcomes.length; ++i) {
             uint256 priceFraction = price(marketID, i) * BASE18 / sum;
             ZuniswapV2Pair pair = _pairs[i];
-            orbCoin.mint(address(pair), (amount * multiplier) / BASE18);
+            orbCoin.mint(address(pair), (amount * multiplier) / BASE18 * priceFraction / BASE18);
             _outcomes[i].mint(
                 address(pair),
                 (((amount * multiplier) / BASE18) * priceFraction) / BASE18
@@ -189,7 +184,7 @@ contract Markets {
         (uint112 outcomeAmount, uint112 stableAmount, ) = pairss[marketID][index]
             .getReserves();
 
-        return (outcomeAmount * BASE18) / stableAmount;
+        return (stableAmount * BASE18) / outcomeAmount;
     }
 
     function highestPrice(uint256 marketID) internal view returns (uint256) {
