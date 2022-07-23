@@ -11,7 +11,7 @@ export interface Market {
 }
 
 export type MarketKey = keyof Market;
-export type MarketForm = { [id in MarketKey]: any }
+export type MarketForm = { [id in MarketKey]: any}
 
 export interface ContractInfo {
   address: string;

@@ -33,6 +33,13 @@
 				)
 				.min(2)
 		} as MarketForm),
+		validate: (form) => {
+			return (
+				(form.outcomeTokens as OutcomeTokenForm[])
+					.map((token) => token.price)
+					.reduce((a, b) => a + b) === 1
+			);
+		},
 		onSubmit: (values) => {
 			console.log(values);
 		}
@@ -41,8 +48,15 @@
 	function addToken(_form: MarketForm) {
 		_form.outcomeTokens.push({ ...initialToken });
 		form.set(_form);
-    return null;
+		return null;
 	}
+
+	function removeToken(token: OutcomeTokenForm, _form: MarketForm) {
+		_form.outcomeTokens = (_form.outcomeTokens as OutcomeTokenForm[]).filter((t) => t !== token);
+		form.set(_form);
+		return null;
+	}
+
 </script>
 
 <h4 class="text-center">Create a prediction market</h4>
@@ -69,29 +83,33 @@
 		/>
 
 		{#each $form.outcomeTokens as token, i}
-			<p class="label mb-0">{toOrdinalSuffix(i + 1)} Answer</p>
-			<div class="row">
-				<div class="col-6">
-					<span>Answer</span>
-					<input bind:value={token.name} placeholder="Answer" />
+			<div class="answer">
+				<div class="d-flex align-items-center label">
+					<span>{toOrdinalSuffix(i + 1)} Answer</span>
+					<div class="remove-answer-button ms-2" on:click={removeToken(token, $form)}>
+						<i class="bi bi-x" />
+					</div>
 				</div>
-				<div class="col-3">
-					<span>Symbol</span>
-					<input bind:value={token.symbol} placeholder="Symbol" />
-				</div>
-				<div class="col">
-					<span>Price</span>
-					<input type="number" bind:value={token.price} placeholder="Initial Price" />
+
+				<div class="row">
+					<div class="col-6">
+						<span>Answer</span>
+						<input bind:value={token.name} placeholder="Answer" />
+					</div>
+					<div class="col-3">
+						<span>Symbol</span>
+						<input bind:value={token.symbol} placeholder="Symbol" />
+					</div>
+					<div class="col">
+						<span>Price</span>
+						<input type="number" bind:value={token.price} placeholder="Initial Price" />
+					</div>
 				</div>
 			</div>
 		{/each}
 
 		<div class="d-flex justify-content-center mt-3">
-			<button
-				type="button"
-				class="btn btn-outline-primary"
-				on:click={addToken($form)}
-			>
+			<button type="button" class="btn btn-outline-primary" on:click={addToken($form)}>
 				<i class="bi bi-plus-lg" />
 				Add an Answer
 			</button>
@@ -145,5 +163,13 @@
 				border: 1px solid red;
 			}
 		}
+	}
+
+	.remove-answer-button {
+		display: none;
+		cursor: pointer;
+	}
+	.answer:hover .remove-answer-button {
+		display: block;
 	}
 </style>
