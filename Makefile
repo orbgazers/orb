@@ -70,6 +70,10 @@ deploy-local:
 		--broadcast
 .PHONY: deploy-local
 
+anvil:
+	anvil --chain-id 31337
+.PHONY: anvil
+
 # To initialize a fresh git repo from the contents.
 init:
 	git init .
