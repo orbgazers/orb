@@ -7,7 +7,6 @@ import jazzicon from "@metamask/jazzicon";
 export const chainData: Readable<ChainData | undefined> = derived(
   chainId,
   $chainId => {
-    console.log('Looking for chain data');
     return allChainsData.find(chain => chain.chainId === $chainId);
   }
 );

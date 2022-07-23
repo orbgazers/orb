@@ -62,16 +62,20 @@ watch:
 	forge test --watch src/
 .PHONY: watch
 
-# TODO does it need the extra :Deploy ?
 deploy-local:
 	forge script src/deploy/Deploy.s.sol:DeployLocal \
 		--fork-url http://localhost:8545 \
 		--private-key $(PRIVATE_KEY0) \
-		--broadcast
+		--broadcast \
+		| grep "address," > out/deployment.txt
+	cat out/deployment.txt
+	node scripts/extract_contract_addresses \
+		out/deployment.txt \
+		> frontend/static/abi/deployment.json
 .PHONY: deploy-local
 
 anvil:
-	anvil --chain-id 31337
+	anvil --chain-id 1337
 .PHONY: anvil
 
 # To initialize a fresh git repo from the contents.

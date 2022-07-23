@@ -24,6 +24,13 @@ Tooling required:
 - `make deploy-local` - deploy contracts locally for testing
     - before, run `cp .env.example .env` then `make anvil` (in a separate terminal)
 
+To run the frontend:
+
+- `cd frontend`
+- `pnpm install --frozen-lockfile`
+- `pnpm run prepare`
+- `pnpm run dev`
+
 ## Credits
 
 - [ZuniswapV2](https://github.com/Jeiwan/zuniswapv2) for a foundry-tested,
