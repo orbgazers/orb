@@ -70,6 +70,8 @@ contract MarketsTest is Test {
         backingCoin.mint(address(this), INITIAL_LIQUIDITY);
         backingCoin.approve(address(markets), INITIAL_LIQUIDITY);
         uint256 id = markets.create(info);
+        assertEq(backingCoin.balanceOf(address(this)), 0);
+        assertEq(backingCoin.balanceOf(address(markets)), INITIAL_LIQUIDITY);
         assertEq(id, 0);
         assertEq(id, markets.markets(id).id);
         assertTrue(markets.pairss(id, 0) != markets.pairss(id, 1));
@@ -144,6 +146,8 @@ contract MarketsTest is Test {
         backingCoin.approve(address(markets), INITIAL_LIQUIDITY * 2);
         uint256 id = markets.create(info);
         markets.addLiquidity(id, INITIAL_LIQUIDITY, address(this));
+        assertEq(backingCoin.balanceOf(address(this)), 0);
+        assertEq(backingCoin.balanceOf(address(markets)), INITIAL_LIQUIDITY * 2);
         verifyPair(id, 0, INITIAL_LIQUIDITY * 2, info.initialPrices[0]);
         verifyPair(id, 1, INITIAL_LIQUIDITY * 2, info.initialPrices[1]);
     }
