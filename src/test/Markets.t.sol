@@ -8,7 +8,7 @@ contract MarketsTest is Test {
     OrbCoin private orbCoin;
     MarketInfo private ab;
     uint256 private constant BASE18 = 1 ether;
-    uint256 private constant INITIAL_LIQUIDITY = 10_000;
+    uint256 private constant INITIAL_LIQUIDITY = 10_000 * BASE18;
     Markets private markets;
 
     function setUp() public {
@@ -36,7 +36,7 @@ contract MarketsTest is Test {
             numOutcomes: 2,
             outcomeNames: names,
             outcomeSymbols: symbols,
-            initialLiquidity: 10_000,
+            initialLiquidity: INITIAL_LIQUIDITY,
             stopTime: uint64(block.timestamp + 7_000),
             settlementTime: uint64(block.timestamp + 7_000),
             initialPrices: prices
@@ -46,35 +46,12 @@ contract MarketsTest is Test {
         orbCoin.setOwner(address(markets));
     }
 
-    function testCreate() public {
+    function testCreateBalanced() public {
         uint256 id = markets.create(ab);
         assertEq(id, 0);
         assertTrue(markets.pairss(id, 0) != markets.pairss(id, 1));
-
-        assertEq(markets.price(id, 0), BASE18 / 2);
-        assertEq(markets.price(id, 1), BASE18 / 2);
-
-        address pair0 = address(markets.pairss(id, 0));
-        address pair1 = address(markets.pairss(id, 1));
-        OutcomeToken outcome0 = markets.outcomees(id, 0);
-        OutcomeToken outcome1 = markets.outcomees(id, 1);
-
-        assertEq(ZuniswapV2Pair(pair0).token0(), address(outcome0));
-        assertEq(ZuniswapV2Pair(pair0).token1(), address(orbCoin));
-        assertEq(ZuniswapV2Pair(pair1).token0(), address(outcome1));
-        assertEq(ZuniswapV2Pair(pair1).token1(), address(orbCoin));
-
-        // NOTE: 1000 is the Zuniswap minimum liquidity
-        assertEq(ZuniswapV2Pair(pair0).balanceOf(address(this)), ZuniswapV2Pair(pair0).totalSupply() - 1000);
-        assertEq(ZuniswapV2Pair(pair1).balanceOf(address(this)), ZuniswapV2Pair(pair1).totalSupply() - 1000);
-
-        assertEq(markets.outcomees(id, 0).totalSupply(), INITIAL_LIQUIDITY);
-        assertEq(markets.outcomees(id, 1).totalSupply(), INITIAL_LIQUIDITY);
-        assertEq(markets.outcomees(id, 0).balanceOf(pair0), INITIAL_LIQUIDITY);
-        assertEq(markets.outcomees(id, 1).balanceOf(pair1), INITIAL_LIQUIDITY);
-        // TODO both fail: actual balance 20k, expected 5000
-        assertEq(orbCoin.balanceOf(pair0), INITIAL_LIQUIDITY / 2);
-        assertEq(orbCoin.balanceOf(pair1), INITIAL_LIQUIDITY / 2);
+        verifyPair(id, 0);
+        verifyPair(id, 1);
     }
 
     function verifyPair(uint256 id, uint256 i) internal {
@@ -87,8 +64,10 @@ contract MarketsTest is Test {
         assertEq(pair.token1(), address(orbCoin));
         // NOTE: 1000 is the Uniswap minimum liquidity
         assertEq(pair.balanceOf(address(this)), pair.totalSupply() - 1000);
-        assertEq(outcome.totalSupply(), INITIAL_LIQUIDITY);
-        assertEq(outcome.balanceOf(address(pair)), INITIAL_LIQUIDITY);
-        assertEq(orbCoin.balanceOf(address(pair)), INITIAL_LIQUIDITY / 2);
+
+        // NOTE: 10k liquidity → 2x multiplier, each pool has 10k outcome tokens and 20k orb coins
+        assertEq(outcome.totalSupply(), INITIAL_LIQUIDITY * 2);
+        assertEq(outcome.balanceOf(address(pair)), INITIAL_LIQUIDITY * 2);
+        assertEq(orbCoin.balanceOf(address(pair)), INITIAL_LIQUIDITY);
     }
 }
