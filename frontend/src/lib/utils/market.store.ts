@@ -5,6 +5,10 @@ import type { Market } from "./market.model";
 
 export const markets: Market[] = [];
 
+export function getMarket(id: string): Market {
+  markets.find(market => market.contractAddress === id);
+}
+
 // export const markets: Writable<Market[]> = writable([]);
 
 // fetch('/mocks/markets.json')
