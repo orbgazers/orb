@@ -24,6 +24,7 @@ import { goto } from '$app/navigation';
 		// 	outcomeTokens: [{ ...initialToken }, { ...initialToken }]
 		// } as MarketForm,
 		initialValues: {
+			id: `0x${get(markets).length}`,
 			title: 'Title',
 			description: 'Description',
 			arbiter: get(signerAddress),
@@ -70,10 +71,12 @@ import { goto } from '$app/navigation';
 
 	async function submitForm(values: MarketForm) {
 		// TODO switch to proper id
-		const createPromise = await createMarket(values);
-		const market = await fetchMarkets();
-		console.log(market[market.length - 1]);
-		return await goto(`/market/${market[market.length - 1].id}`);
+		const _markets = [...get(markets), values];
+		markets.set(_markets);
+		// const createPromise = await createMarket(values);
+		// const market = await fetchMarkets();
+		// console.log(market[market.length - 1]);
+		return await goto(`/market/${values.id}`);
 	}
 
 	function addToken(_form: MarketForm) {
