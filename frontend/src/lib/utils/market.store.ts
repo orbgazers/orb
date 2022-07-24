@@ -85,7 +85,9 @@ export async function createMarket(market: Market) {
     market.description,
     market.outcomeTokens.map(token => token.name),
     market.outcomeTokens.map(token => token.symbol),
-    market.outcomeTokens.map(token => FixedNumber.fromString(token.price.toString()))
+    market.outcomeTokens.map(token =>
+    // TODO multiply by 10^18
+      FixedNumber.fromString(token.price.toString()))
   ]);
   const r2 = await tx2.wait();
 
@@ -119,6 +121,16 @@ function marketResponseToMarket(response: MarketResponse): Market {
     arbiter: response.arbiter,
     outcomeTokens: outcomeTokens
   }
+}
+
+export async function buy(id: number, index: number, amount: BigNumber, buyer: string) {
+  const _contracts = get(contracts);
+  if (!_contracts) return;
+
+  let tx = await _contracts.backingCoin.functions.approve(_contracts.markets.address, amount);
+  await tx.wait();
+  tx = await _contracts.markets.buy(id, index, amount, 0, buyer);
+  await tx.wait();
 }
 
 interface MarketResponse {
