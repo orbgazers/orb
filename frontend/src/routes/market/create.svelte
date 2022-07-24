@@ -25,8 +25,8 @@ import { goto } from '$app/navigation';
 		// } as MarketForm,
 		initialValues: {
 			id: `0x${get(markets).length}`,
-			title: 'Who is gonna win the Hacathon?',
-			description: 'Who is gonna win the Hacathon?',
+			title: 'Who is gonna win the Hackathon?',
+			description: 'Who is gonna win the Hackathon?',
 			arbiter: get(signerAddress),
 			closingDate: null,
 			settlementDate: null,
