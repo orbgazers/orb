@@ -28,6 +28,7 @@ contract DeployLocal is Script {
         address markets = address(new Markets(orbcoin, backing));
         console2.log("Markets address", markets);
 
+        OrbCoin(orbcoin).setOwner(markets);
         ERC20Mintable(backing).mint(msg.sender, 1000 ether);
 
         vm.stopBroadcast();
@@ -58,6 +59,8 @@ contract DeployPublic is Script {
         console2.log("Orbcoin address", orbcoin);
         address markets = address(new Markets{salt: salt}(orbcoin, usdc));
         console2.log("Markets address", markets);
+
+        OrbCoin(orbcoin).setOwner(markets);
 
         vm.stopBroadcast();
     }

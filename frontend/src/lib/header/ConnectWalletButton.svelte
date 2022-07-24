@@ -1,10 +1,12 @@
 <script lang="ts">
-	import { initMarkets } from '$lib/utils/market.store';
+	import { fetchMarkets, initContracts } from '$lib/utils/market.store';
 	import { chainData, formatEth, metamaskAvatar } from '$lib/utils/utils';
 	import { onMount } from 'svelte';
 	import { connected, defaultEvmStores, signer } from 'svelte-ethers-store';
 
-	onMount(() => initMarkets());
+	onMount(() => {
+		initContracts()
+	});
 
 	function connectToWallet() {
 		defaultEvmStores.setProvider();
