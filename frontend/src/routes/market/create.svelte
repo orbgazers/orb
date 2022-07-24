@@ -25,20 +25,20 @@ import { goto } from '$app/navigation';
 		// } as MarketForm,
 		initialValues: {
 			id: `0x${get(markets).length}`,
-			title: 'Title',
-			description: 'Description',
+			title: 'Who is gonna win the Hacathon?',
+			description: 'Who is gonna win the Hacathon?',
 			arbiter: get(signerAddress),
 			closingDate: null,
 			settlementDate: null,
 			outcomeTokens: [{
-				name: 'Token 1',
-				symbol: 'T1',
-				price: 0.3
+				name: 'The Pondering Orb',
+				symbol: 'ORB',
+				price: 0.7
 			}, 
 			{
-				name: 'Token 2',
-				symbol: 'T2',
-				price: 0.7
+				name: 'The Wondering Rob',
+				symbol: 'ROB',
+				price: 0.1
 			}]
 		} as MarketForm,
 		validationSchema: yup.object().shape({

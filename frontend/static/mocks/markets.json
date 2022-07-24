@@ -9,93 +9,17 @@
       {
         "name": "Merge",
         "symbol": "YES",
-        "price": "0.1"
+        "price": "0.8"
       },
       {
         "name": "Purge",
         "symbol": "NO",
-        "price": "0.9"
+        "price": "0.2"
       }
     ]
   },
   {
-    "title": "2022 rugby world cup",
-    "description": "Who will win the 2022 rugby world cup: France or South Africa?",
-    "closingDate": "2022-08-28 14:30",
-    "settlementDate": "2022-08-28 14:30",
-    "id": "0x1",
-    "outcomeTokens": [
-      {
-        "name": "France",
-        "symbol": "FR",
-        "price": "0.6"
-      },
-      {
-        "name": "South Africa",
-        "symbol": "SA",
-        "price": "0.4"
-      }
-    ]
-  },
-  {
-    "title": "Will the merge happen by September 2022?",
-    "description": "Can devs do something?",
-    "closingDate": "2022-09-01 00:00",
-    "settlementDate": "2022-10-01 12:00",
-    "id": "0x0",
-    "outcomeTokens": [
-      {
-        "name": "Merge",
-        "symbol": "YES",
-        "price": "0.1"
-      },
-      {
-        "name": "Purge",
-        "symbol": "NO",
-        "price": "0.9"
-      }
-    ]
-  },
-  {
-    "title": "2022 rugby world cup",
-    "description": "Who will win the 2022 rugby world cup: France or South Africa?",
-    "closingDate": "2022-08-28 14:30",
-    "settlementDate": "2022-08-28 14:30",
-    "id": "0x1",
-    "outcomeTokens": [
-      {
-        "name": "France",
-        "symbol": "FR",
-        "price": "0.6"
-      },
-      {
-        "name": "South Africa",
-        "symbol": "SA",
-        "price": "0.4"
-      }
-    ]
-  },
-  {
-    "title": "Will the merge happen by September 2022?",
-    "description": "Can devs do something?",
-    "closingDate": "2022-09-01 00:00",
-    "settlementDate": "2022-10-01 12:00",
-    "id": "0x0",
-    "outcomeTokens": [
-      {
-        "name": "Merge",
-        "symbol": "YES",
-        "price": "0.1"
-      },
-      {
-        "name": "Purge",
-        "symbol": "NO",
-        "price": "0.9"
-      }
-    ]
-  },
-  {
-    "title": "2022 rugby world cup",
+    "title": "2022 Rugby World Cup",
     "description": "Who will win the 2022 rugby world cup: France or South Africa?",
     "closingDate": "2022-08-28 14:30",
     "settlementDate": "2022-08-28 14:30",
