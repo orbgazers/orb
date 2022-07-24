@@ -3,4 +3,4 @@
 	import MarketView from '$lib/components/market/MarketView.svelte';
 </script>
 
-<MarketView contractAddress={$page.params.id} />
+<MarketView id={$page.params.id} />

@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { markets, fetchMarkets } from '$lib/utils/market.store';
+	import { markets } from '$lib/utils/market.store';
 	import Time from 'svelte-time';
+
 </script>
 
 <div class="row g-3">
-	<button type="button" on:click="{fetchMarkets}">Fetch</button>
-	{#each markets as market}
+	{#each $markets as market}
 		<div class="col-3">
 			<div class="market-card">
-				<a href="/market/{market.contractAddress}">
+				<a href="/market/{market.id}">
 					<h5 class="fw-bold mb-2">{market.title}</h5>
 					<p>{market.description}</p>
 					<div class="d-flex justify-content-between mb-2">

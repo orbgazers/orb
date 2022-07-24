@@ -1,10 +1,10 @@
 export interface Market {
+  id: string,
   title: string;
   description: string;
   //totalVolume: number; // currency?
   closingDate: Date;
   settlementDate: Date;
-  contractAddress: string;
   creator: string;
   arbiter: string;
   outcomeTokens: OutcomeToken[];

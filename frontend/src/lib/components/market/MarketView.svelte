@@ -2,9 +2,9 @@
 	import { getMarket } from '$lib/utils/market.store';
 	import Liquidity from './Liquidity.svelte';
 	import Trade from './Trade.svelte';
-	export let contractAddress: string;
+	export let id: string;
 
-	const market = getMarket(contractAddress);
+	const market = getMarket(id);
 
 	enum View {
 		trade,

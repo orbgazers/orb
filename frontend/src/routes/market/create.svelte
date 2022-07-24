@@ -4,9 +4,10 @@
 	import { DateInput } from 'date-picker-svelte';
 	import { toOrdinalSuffix } from '$lib/utils/utils';
 	import type { MarketForm, OutcomeTokenForm } from '$lib/utils/market.model';
-	import { createMarket } from '$lib/utils/market.store';
-import { get } from 'svelte/store';
-import { signerAddress } from 'svelte-ethers-store';
+	import { createMarket, fetchMarkets, markets } from '$lib/utils/market.store';
+	import { get } from 'svelte/store';
+	import { signerAddress } from 'svelte-ethers-store';
+import { goto } from '$app/navigation';
 
 	const initialToken: OutcomeTokenForm = {
 		name: '',
@@ -14,13 +15,30 @@ import { signerAddress } from 'svelte-ethers-store';
 		price: null
 	};
 	const { form, errors, state, handleChange, handleSubmit } = createForm({
+		// initialValues: {
+		// 	title: '',
+		// 	description: '',
+		// 	arbiter: get(signerAddress),
+		// 	closingDate: null,
+		// 	settlementDate: null,
+		// 	outcomeTokens: [{ ...initialToken }, { ...initialToken }]
+		// } as MarketForm,
 		initialValues: {
-			title: '',
-			description: '',
+			title: 'Title',
+			description: 'Description',
 			arbiter: get(signerAddress),
 			closingDate: null,
 			settlementDate: null,
-			outcomeTokens: [{ ...initialToken }, { ...initialToken }]
+			outcomeTokens: [{
+				name: 'Token 1',
+				symbol: 'T1',
+				price: 0.3
+			}, 
+			{
+				name: 'Token 2',
+				symbol: 'T2',
+				price: 0.7
+			}]
 		} as MarketForm,
 		validationSchema: yup.object().shape({
 			title: yup.string().required(),
@@ -46,9 +64,17 @@ import { signerAddress } from 'svelte-ethers-store';
 			);
 		},
 		onSubmit: (values) => {
-			createMarket(values);
+			submitForm(values);
 		}
 	});
+
+	async function submitForm(values: MarketForm) {
+		// TODO switch to proper id
+		const createPromise = await createMarket(values);
+		const market = await fetchMarkets();
+		console.log(market[market.length - 1]);
+		return await goto(`/market/${market[market.length - 1].id}`);
+	}
 
 	function addToken(_form: MarketForm) {
 		_form.outcomeTokens.push({ ...initialToken });
