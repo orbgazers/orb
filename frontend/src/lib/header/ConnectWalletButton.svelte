@@ -1,65 +1,48 @@
 <script lang="ts">
-    import {chainData, formatEth, metamaskAvatar} from '$lib/utils/utils';
-    import {ethers} from 'ethers';
-    import {
-        connected,
-        defaultEvmStores,
-        signerAddress,
-        signer,
-        contracts,
-        provider
-    } from 'svelte-ethers-store';
-    import truncateEthAddress from 'truncate-eth-address';
+	import { initMarkets } from '$lib/utils/market.store';
+	import { chainData, formatEth, metamaskAvatar } from '$lib/utils/utils';
+	import { onMount } from 'svelte';
+	import { connected, defaultEvmStores, signer } from 'svelte-ethers-store';
 
-    function connectToWallet() {
-        defaultEvmStores.setProvider();
-    }
+	onMount(() => initMarkets());
 
-    // async function getBalance(): Promise<string | null> {
-    // 	if (!$signer) return null;
-    // 	const balance = await $signer.getBalance();
-    // 	return formatEth(balance);
-    // }
-
-    // provider.subscribe((provider) => {
-    // 	if (provider)
-    // 		provider.getNetwork().then((nw) => {
-    // 			console.log(nw);
-    // 		});
-    // });
+	function connectToWallet() {
+		defaultEvmStores.setProvider();
+	}
 </script>
 
 {#if !$connected}
-    <button type="button" class="btn btn-primary" on:click={connectToWallet}>Connect Wallet</button>
+	<button type="button" class="btn btn-primary" on:click={connectToWallet}>Connect Wallet</button>
 {:else}
-    <div class="d-flex align-items-center">
+	<div class="d-flex align-items-center">
 		<span>
 			<!-- {$chainData?.name} -->
 
-            {#await $signer.getBalance() then balance}
+			{#await $signer.getBalance() then balance}
 				<div class="d-flex align-items-center balance-field px-2">
-					<img src="/img/eth.svg"/>
-                    {formatEth(balance)} {$chainData?.nativeCurrency.symbol}
+					<img src="/img/eth.svg" />
+					{formatEth(balance)}
+					{$chainData?.nativeCurrency.symbol}
 				</div>
 			{/await}
 
-            <!-- ({truncateEthAddress($signerAddress)}) -->
+			<!-- ({truncateEthAddress($signerAddress)}) -->
 
-            <!-- {#await $provider.getNetwork() then network} {network.name} {/await} -->
+			<!-- {#await $provider.getNetwork() then network} {network.name} {/await} -->
 		</span>
 
-        <div
-                class="d-flex align-items-center ms-2"
-                contenteditable="false"
-                bind:innerHTML={$metamaskAvatar}
-        />
-    </div>
+		<div
+			class="d-flex align-items-center ms-2"
+			contenteditable="false"
+			bind:innerHTML={$metamaskAvatar}
+		/>
+	</div>
 {/if}
 
 <style lang="scss">
-  .balance-field {
-    background: #ececec;
-    border-radius: 5px;
-    height: 36px;
-  }
+	.balance-field {
+		background: #ececec;
+		border-radius: 5px;
+		height: 36px;
+	}
 </style>

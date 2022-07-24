@@ -5,6 +5,8 @@
 	import { toOrdinalSuffix } from '$lib/utils/utils';
 	import type { MarketForm, OutcomeTokenForm } from '$lib/utils/market.model';
 	import { createMarket } from '$lib/utils/market.store';
+import { get } from 'svelte/store';
+import { signerAddress } from 'svelte-ethers-store';
 
 	const initialToken: OutcomeTokenForm = {
 		name: '',
@@ -15,7 +17,7 @@
 		initialValues: {
 			title: '',
 			description: '',
-			arbiter: '0x88c17fd2Df5C1BCcA07a391A3B734174063acbdf',
+			arbiter: get(signerAddress),
 			closingDate: null,
 			settlementDate: null,
 			outcomeTokens: [{ ...initialToken }, { ...initialToken }]
