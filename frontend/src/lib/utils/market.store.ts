@@ -15,33 +15,32 @@ let initialized = false;
 // instantiate contracts
 export function initContracts() {
   if (initialized) return;
-  fetch('/abi/deployment.json')
-    .then(response => response.json())
-    .then(deployment => {
-      fetch('/abi/Markets.json')
-        .then(response => response.json())
-        .then(abi => {
-          defaultEvmStores.attachContract('markets', deployment.Markets, abi, true)
-            .then(x => {
-              initialized = true;
-            })
-        })
+  // fetch('/abi/deployment.json')
+  //   .then(response => response.json())
+  //   .then(deployment => {
+  //     fetch('/abi/Markets.json')
+  //       .then(response => response.json())
+  //       .then(abi => {
+  //         defaultEvmStores.attachContract('markets', deployment.Markets, abi, true)
+  //           .then(x => {
+  //             initialized = true;
+  //           })
+  //       })
 
-      fetch('/abi/IERC20.json')
-        .then(response => response.json())
-        .then(abi => {
-          defaultEvmStores.attachContract('backingCoin', deployment.BackingCoin, abi, true);
-        });
-    })
-  
-  
+  //     fetch('/abi/IERC20.json')
+  //       .then(response => response.json())
+  //       .then(abi => {
+  //         defaultEvmStores.attachContract('backingCoin', deployment.BackingCoin, abi, true);
+  //       });
+  //   })
+
 }
 
-const unsubscribe = contracts.subscribe(c => {
-  if (c.markets) fetchMarkets();
-  console.log(c);
-  console.log(get(defaultEvmStores.provider));
-})
+// const unsubscribe = contracts.subscribe(c => {
+//   if (c.markets) fetchMarkets();
+//   console.log(c);
+//   console.log(get(defaultEvmStores.provider));
+// })
 
 // export async function initContracts() {
 //   if (initialized) return;
@@ -95,11 +94,18 @@ export async function createMarket(market: Market) {
 }
 
 export async function fetchMarkets(): Promise<Market[]> {
-  const marketResponse = await get(contracts).markets.getMarketList();
-  const _markets = marketResponse.map(response => marketResponseToMarket(response.info as MarketResponse));
-  markets.set(_markets);
-  unsubscribe();
-  return _markets;
+  const res = await fetch('/mocks/markets.json');
+  console.log(res);
+  const json = await res.json();
+  console.log(json);
+  markets.set(json);
+  return json;
+    
+  // const marketResponse = await get(contracts).markets.getMarketList();
+  // const _markets = marketResponse.map(response => marketResponseToMarket(response.info as MarketResponse));
+  // markets.set(_markets);
+  // unsubscribe();
+  // return _markets;
 }
 
 function marketResponseToMarket(response: MarketResponse): Market {

@@ -4,9 +4,7 @@
 	import { onMount } from 'svelte';
 	import { connected, defaultEvmStores, signer } from 'svelte-ethers-store';
 
-	onMount(() => {
-		initContracts()
-	});
+	onMount(fetchMarkets);
 
 	function connectToWallet() {
 		defaultEvmStores.setProvider();

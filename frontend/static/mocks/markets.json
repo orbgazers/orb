@@ -1,18 +1,20 @@
 [
   {
-    "title": "2022 rugby world cup",
-    "description": "Who will win the 2022 rugby world cup: France or South Africa?",
-    "closingDate": "2022-08-28 14:30",
-    "settlementDate": "2022-08-28 14:30",
-    "contractAddress": "12345",
+    "title": "Will the merge happen by September 2022?",
+    "description": "Can devs do something?",
+    "closingDate": "2022-09-01 00:00",
+    "settlementDate": "2022-10-01 12:00",
+    "id": "0x0",
     "outcomeTokens": [
       {
-        "name": "France",
-        "price": "0.6"
+        "name": "Merge",
+        "symbol": "YES",
+        "price": "0.1"
       },
       {
-        "name": "South Africa",
-        "price": "0.4"
+        "name": "Purge",
+        "symbol": "NO",
+        "price": "0.9"
       }
     ]
   },
@@ -21,15 +23,36 @@
     "description": "Who will win the 2022 rugby world cup: France or South Africa?",
     "closingDate": "2022-08-28 14:30",
     "settlementDate": "2022-08-28 14:30",
-    "contractAddress": "12345",
+    "id": "0x1",
     "outcomeTokens": [
       {
         "name": "France",
+        "symbol": "FR",
         "price": "0.6"
       },
       {
         "name": "South Africa",
+        "symbol": "SA",
         "price": "0.4"
+      }
+    ]
+  },
+  {
+    "title": "Will the merge happen by September 2022?",
+    "description": "Can devs do something?",
+    "closingDate": "2022-09-01 00:00",
+    "settlementDate": "2022-10-01 12:00",
+    "id": "0x0",
+    "outcomeTokens": [
+      {
+        "name": "Merge",
+        "symbol": "YES",
+        "price": "0.1"
+      },
+      {
+        "name": "Purge",
+        "symbol": "NO",
+        "price": "0.9"
       }
     ]
   },
@@ -38,15 +61,36 @@
     "description": "Who will win the 2022 rugby world cup: France or South Africa?",
     "closingDate": "2022-08-28 14:30",
     "settlementDate": "2022-08-28 14:30",
-    "contractAddress": "12345",
+    "id": "0x1",
     "outcomeTokens": [
       {
         "name": "France",
+        "symbol": "FR",
         "price": "0.6"
       },
       {
         "name": "South Africa",
+        "symbol": "SA",
         "price": "0.4"
+      }
+    ]
+  },
+  {
+    "title": "Will the merge happen by September 2022?",
+    "description": "Can devs do something?",
+    "closingDate": "2022-09-01 00:00",
+    "settlementDate": "2022-10-01 12:00",
+    "id": "0x0",
+    "outcomeTokens": [
+      {
+        "name": "Merge",
+        "symbol": "YES",
+        "price": "0.1"
+      },
+      {
+        "name": "Purge",
+        "symbol": "NO",
+        "price": "0.9"
       }
     ]
   },
@@ -55,31 +99,16 @@
     "description": "Who will win the 2022 rugby world cup: France or South Africa?",
     "closingDate": "2022-08-28 14:30",
     "settlementDate": "2022-08-28 14:30",
-    "contractAddress": "12345",
+    "id": "0x1",
     "outcomeTokens": [
       {
         "name": "France",
+        "symbol": "FR",
         "price": "0.6"
       },
       {
         "name": "South Africa",
-        "price": "0.4"
-      }
-    ]
-  },
-  {
-    "title": "2022 rugby world cup",
-    "description": "Who will win the 2022 rugby world cup: France or South Africa?",
-    "closingDate": "2022-08-28 14:30",
-    "settlementDate": "2022-08-28 14:30",
-    "contractAddress": "12345",
-    "outcomeTokens": [
-      {
-        "name": "France",
-        "price": "0.6"
-      },
-      {
-        "name": "South Africa",
+        "symbol": "SA",
         "price": "0.4"
       }
     ]
