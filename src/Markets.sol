@@ -1,9 +1,10 @@
 pragma solidity ^0.8.10;
 import "./OutcomeToken.sol";
 import "./OrbCoin.sol";
-import "./ZuniswapV2Pair.sol";
-import {console2} from "forge-std/Test.sol";
 import "./LPToken.sol";
+import "./ZuniswapV2Pair.sol";
+import "./ZuniswapV2Router.sol";
+import {console2} from "forge-std/Test.sol";
 
 struct Market {
     MarketInfo info;
@@ -255,5 +256,50 @@ contract Markets {
             sum += price(marketID, i);
         }
         return sum;
+    }
+
+    function buy(
+        uint256 marketID,
+        uint256 index,
+        uint256 amountIn,
+        uint256 amountOutMin,
+        address buyer
+    ) public returns (uint256) {
+        ZuniswapV2Pair pair = pairs[marketID][index];
+        orbCoin.mint(address(this), amountIn);
+        (uint256 rOutcome, uint256 rOrb, ) = pair.getReserves();
+        uint256 amountOut = ZuniswapV2Library.getAmountOut(
+            amountIn,
+            rOrb,
+            rOutcome
+        );
+        require(amountOut >= amountOutMin, "excessive slippage");
+        orbCoin.transfer(address(pair), amountIn);
+        pair.swap(amountOut, 0, buyer, "");
+        backingCoin.transferFrom(buyer, address(this), amountIn);
+        return amountOut;
+    }
+
+    function sell(
+        uint256 marketID,
+        uint256 index,
+        uint256 amountIn,
+        uint256 amountOutMin,
+        address seller
+    ) public returns (uint256) {
+        ZuniswapV2Pair pair = pairs[marketID][index];
+        OutcomeToken outcome = outcomes[marketID][index];
+        (uint256 rOutcome, uint256 rOrb, ) = pair.getReserves();
+        uint256 amountOut = ZuniswapV2Library.getAmountOut(
+            amountIn,
+            rOutcome,
+            rOrb
+        );
+        require(amountOut >= amountOutMin, "excessive slippage");
+        outcome.transferFrom(seller, address(pair), amountIn);
+        pair.swap(0, amountOut, address(this), "");
+        orbCoin.burn(address(this), amountOut);
+        backingCoin.transfer(seller, amountOut);
+        return amountOut;
     }
 }

@@ -4,10 +4,14 @@ import "../ERC20Mintable.sol";
 import "../Markets.sol";
 import "../OrbCoin.sol";
 import "../OutcomeToken.sol";
+import "../ZuniswapV2Factory.sol";
+import "../ZuniswapV2Router.sol";
 
 contract MarketsTest is Test {
     OrbCoin private orbCoin;
     ERC20Mintable private backingCoin;
+    address private factory;
+    address private router;
     MarketInfo private abBalanced;
     MarketInfo private abUnbalanced;
     uint256 private constant BASE18 = 1 ether;
@@ -17,6 +21,8 @@ contract MarketsTest is Test {
     function setUp() public {
         orbCoin = new OrbCoin();
         backingCoin = new ERC20Mintable("Backing", "BAK");
+        factory = address(new ZuniswapV2Factory());
+        router = address(new ZuniswapV2Router(factory));
 
         string[] memory names = new string[](2);
         names[0] = "Token A";
@@ -58,6 +64,15 @@ contract MarketsTest is Test {
         orbCoin.setOwner(address(markets));
     }
 
+    function createMarket(MarketInfo storage info, uint256 mint)
+        internal
+        returns (uint256 id)
+    {
+        backingCoin.mint(address(this), mint);
+        backingCoin.approve(address(markets), mint);
+        id = markets.create(info);
+    }
+
     function testCreateBalanced() public {
         createTestForInfo(abBalanced);
     }
@@ -67,9 +82,7 @@ contract MarketsTest is Test {
     }
 
     function createTestForInfo(MarketInfo storage info) internal {
-        backingCoin.mint(address(this), INITIAL_LIQUIDITY);
-        backingCoin.approve(address(markets), INITIAL_LIQUIDITY);
-        uint256 id = markets.create(info);
+        uint256 id = createMarket(info, INITIAL_LIQUIDITY);
         assertEq(id, 0);
         assertEq(backingCoin.balanceOf(address(this)), 0);
         assertEq(backingCoin.balanceOf(address(markets)), INITIAL_LIQUIDITY);
@@ -146,9 +159,7 @@ contract MarketsTest is Test {
     }
 
     function addLiquidityTestForInfo(MarketInfo storage info) internal {
-        backingCoin.mint(address(this), INITIAL_LIQUIDITY * 2);
-        backingCoin.approve(address(markets), INITIAL_LIQUIDITY * 2);
-        uint256 id = markets.create(info);
+        uint256 id = createMarket(info, INITIAL_LIQUIDITY * 2);
         markets.addLiquidity(id, INITIAL_LIQUIDITY, address(this));
         assertEq(backingCoin.balanceOf(address(this)), 0);
         assertEq(
@@ -161,6 +172,90 @@ contract MarketsTest is Test {
         );
         verifyPair(id, 0, INITIAL_LIQUIDITY * 2, info.initialPrices[0]);
         verifyPair(id, 1, INITIAL_LIQUIDITY * 2, info.initialPrices[1]);
+    }
+
+    function testBuyBalanced() public {
+        buyTest(abBalanced, 0);
+        buyTest(abBalanced, 1);
+    }
+
+    function testBuyUnbalanced() public {
+        buyTest(abUnbalanced, 0);
+        buyTest(abUnbalanced, 1);
+    }
+
+    function buyTest(MarketInfo storage info, uint256 index) internal {
+        uint256 id = createMarket(info, INITIAL_LIQUIDITY);
+        uint256 amount = 1000 * BASE18;
+        backingCoin.mint(address(this), amount);
+        backingCoin.approve(address(markets), amount);
+        OutcomeToken outcome = markets.outcomes(id, index);
+
+        // ignore slippage for now
+        markets.buy(id, index, amount, 0, address(this));
+        assertEq(backingCoin.balanceOf(address(this)), 0);
+
+        // balanced (50/50) case: each pool start with 20k outcome / 10k ORB
+        // unbalanced (90/10): each pool starts with ~14.3k outcome / ~12.9k/1.4k ORB
+        if (info.initialPrices[index] == BASE18 / 2) {
+            assertEq(
+                outcome.balanceOf(address(this)) / BASE18,
+                1813,
+                "bad 50/50 buy balance"
+            );
+        } else if (info.initialPrices[index] == (BASE18 * 9) / 10) {
+            // unbalanced 90/10: 90% side
+            assertEq(
+                outcome.balanceOf(address(this)) / BASE18,
+                1028,
+                "bad 90 buy balance"
+            );
+        } else {
+            // unbalanced 90/10: 10% side
+            assertEq(
+                outcome.balanceOf(address(this)) / BASE18,
+                5871,
+                "bad 10 buy balance"
+            );
+        }
+    }
+
+    function testSellBalanced() public {
+        sellTest(abBalanced, 0);
+        sellTest(abBalanced, 1);
+    }
+
+    function testSellUnbalanced() public {
+        sellTest(abUnbalanced, 0);
+        sellTest(abUnbalanced, 1);
+    }
+
+    function sellTest(MarketInfo storage info, uint256 index) internal {
+        uint256 id = createMarket(info, INITIAL_LIQUIDITY);
+        uint256 amount = 1000 * BASE18;
+        OutcomeToken outcome = markets.outcomes(id, index);
+        vm.prank(address(markets));
+        outcome.mint(address(this), amount);
+        outcome.approve(address(markets), amount);
+
+        // ignore slippage for now
+        markets.sell(id, index, amount, 0, address(this));
+        assertEq(outcome.balanceOf(address(this)), 0);
+
+        uint256 balance = backingCoin.balanceOf(address(this));
+
+        // balanced (50/50) case: each pool start with 20k outcome / 10k ORB
+        // unbalanced (90/10): each pool starts with ~14.3k outcome / ~12.9k/1.4k ORB
+        if (info.initialPrices[index] == BASE18 / 2) {
+            assertEq(balance / BASE18, 474, "bad 50/50 sell balance");
+        } else if (info.initialPrices[index] == (BASE18 * 9) / 10) {
+            // unbalanced 90/10: 90% side
+            assertEq(balance / BASE18, 838, "bad 90 sell balance");
+        } else {
+            // unbalanced 90/10: 10% side
+            assertEq(balance / BASE18, 93, "bad 10 sell balance");
+        }
+        backingCoin.burn(address(this), balance);
     }
 
     // TODO:
