@@ -31,7 +31,7 @@
 	}
 
 	.logo-text {
-		font-family: Rubik-Medium;
+		font-family: Rubik;
 		letter-spacing: -0.05em;
 	}
 </style>

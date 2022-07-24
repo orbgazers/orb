@@ -12,6 +12,24 @@ $font-family-sans-serif: 'SF Pro';
 	src: local(''), url('/fonts/SFProDisplay-Regular.ttf') format('truetype');
 }
 
+@font-face {
+	font-family: SFProDisplay-Bold;
+	// font-style: normal;
+	// font-weight: 400;
+	// font-size: 16px;
+	// line-height: 24px;
+	src: local(''), url('/fonts/SFProDisplay-Bold.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: Rubik;
+	// font-style: normal;
+	// font-weight: 400;
+	// font-size: 16px;
+	// line-height: 24px;
+	src: local(''), url('/fonts/Rubik-Medium.ttf') format('truetype');
+}
+
 html {
 	background-color: white;
 }
