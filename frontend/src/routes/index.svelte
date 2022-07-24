@@ -4,7 +4,7 @@
 </script>
 
 <div class="row g-3">
-	<button on:click="{fetchMarkets()}">Fetch</button>
+	<button type="button" on:click="{fetchMarkets}">Fetch</button>
 	{#each markets as market}
 		<div class="col-3">
 			<div class="market-card">
