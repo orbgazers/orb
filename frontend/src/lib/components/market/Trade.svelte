@@ -86,7 +86,8 @@
 			border-radius: 0;
 		}
 		.selected {
-			border-bottom: 1px solid $primary;
+			border-bottom: 2px solid $primary;
+			color: $primary;
 		}
 	}
 

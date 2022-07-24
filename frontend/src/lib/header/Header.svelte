@@ -8,10 +8,11 @@
 		<a href="/">
 			<div class="d-flex">
 				<img src="/favicon.png" alt="Logo" class="logo me-3" />
-				<h2 class="fw-bold">The Pondering Orb</h2>
+				<h2 class="logo-text">The Pondering Orb</h2>
 			</div>
 		</a>
 	</div>
+
 
 	<div class="col-auto d-flex justify-content-end align-items-center">
 		{#if $connected}
@@ -27,5 +28,10 @@
 <style lang="scss">
 	.logo {
 		height: 40px;
+	}
+
+	.logo-text {
+		font-family: Rubik-Medium;
+		letter-spacing: -0.05em;
 	}
 </style>

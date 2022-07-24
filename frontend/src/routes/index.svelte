@@ -4,6 +4,10 @@
 
 </script>
 
+<div class="cover-image">
+	<span class="header-text">A market for predictions, bets, options and all matters of promises</span>
+</div>
+
 <div class="row g-3">
 	{#each $markets as market}
 		<div class="col-3">
@@ -57,5 +61,25 @@
 				}
 			}
 		}
+	}
+	.cover-image {
+		border: 1px solid #6F27F5;
+		border-radius: 20px;
+		border-width: 2px;
+		height: 240px;
+		padding: 40px;
+		font-size: 40px;
+		line-height: 48px;
+		font-weight: bold;
+		margin-bottom: 40px;
+		background-image: url(/img/header-image.png);
+		background-size:100% 100%;
+
+		.header-text{
+			position: absolute;
+			width: 532px;
+			font-family: SFProDisplay-Bold;
+		}
+
 	}
 </style>
