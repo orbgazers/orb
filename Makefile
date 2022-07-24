@@ -21,8 +21,7 @@ abi:
 	make build
 	mkdir -p frontend/static/abi
 	forge inspect Markets abi > frontend/static/abi/Markets.json
-	forge inspect OrbCoin abi > frontend/static/abi/OrbCoin.json
-	forge inspect OutcomeToken abi > frontend/static/abi/OutcomeToken.json
+	forge inspect IERC20 abi > frontend/static/abi/IERC20.json
 .PHONY: build
 
 clean:

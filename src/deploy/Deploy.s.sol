@@ -18,13 +18,13 @@ contract DeployLocal is Script {
         // 0x4e59b44847b379578588920ca78fbf26c0b4956c and that's not the case on the Anvil chain.
 
         address factory = address(new ZuniswapV2Factory());
-        console2.log("Factory address", factory);
+        console2.log("ZuniswapV2Factory address", factory);
         address router = address(new ZuniswapV2Router(factory));
-        console2.log("Router address", router);
+        console2.log("ZuniswapV2Router address", router);
         address orbcoin = address(new OrbCoin());
-        console2.log("Orbcoin address", orbcoin);
+        console2.log("OrbCoin address", orbcoin);
         address backing = address(new ERC20Mintable("Backing", "BAK"));
-        console2.log("Backing token address", backing);
+        console2.log("BackingCoin token address", backing);
         address markets = address(new Markets(orbcoin, backing));
         console2.log("Markets address", markets);
 
